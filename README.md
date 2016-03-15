@@ -15,8 +15,7 @@ var watcher = new Watcher({
 	storage: './temp/storage.json'
 });
 watcher.watch(['./target/a.txt', './target/b.txt'], (changes, resolve) => {
-	change.forEach((item) => console.log(`${item.type} file "${item.name}"`));
-	resolve(changes.length ? 'repeat' : 'next');
+	changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
 }).then(() => console.log('finish'));
 ```
 
@@ -27,11 +26,8 @@ var WatcherSync = require('fs-watcher/sync');
 var watcher = new WatcherSync({
 	storage: './temp/storage.json'
 });
-var changes;
-var target = ['./target/a.txt', './target/b.txt'];
-do {
-	changes = watcher.watch(target);
+for (let changes of watcher.watch(['./target/a.txt', './target/b.txt'])) {
 	changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
-} while (changes.length);
+}
 console.log('finish');
 ```
