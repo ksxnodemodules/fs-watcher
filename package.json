@@ -1,0 +1,27 @@
+
+{
+	"name": "fs-watcher",
+	"description": "Watch file changes, then execute JavaScript functions",
+	"version": "0.0.0",
+	"author": "Hoàng Văn Khải <hvksmr1996@gmail.com>",
+	"contributors": [
+		"Hoàng Văn Khải <hvksmr1996@gmail.com>"
+	],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ksxnodemodules/fs-watcher.git"
+	},
+	"engines": {
+		"node": ">= 5.0.0"
+	},
+	"dependencies": {},
+	"main": "index.js",
+	"bugs": {
+		"url": "https://github.com/ksxnodemodules/fs-watcher/issues"
+	},
+	"homepage": "https://github.com/ksxnodemodules/fs-watcher#readme",
+	"scripts": {
+		"test": "node --es-staging ./test/main.js"
+	}
+}
