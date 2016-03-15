@@ -26,8 +26,10 @@ var WatcherSync = require('fs-watcher/sync');
 var watcher = new WatcherSync({
 	storage: './temp/storage.json'
 });
-for (let changes of watcher.watch(['./target/a.txt', './target/b.txt'])) {
-	changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
+var callback = (changes) =>
+	changes.forEach((item) => `${item.type} file "${item.name}"`);
+for (let message of watcher.watch(['./target/a.txt', './target/b.txt'], callback)) {
+	console.log(message);
 }
 console.log('finish');
 ```
