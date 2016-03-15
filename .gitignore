@@ -1,0 +1,5 @@
+*.log
+quick-test/*
+!quick-test/*.md
+temp/*
+!tem*.md
