@@ -23,10 +23,14 @@
 		var createPromiseCallback = (...args) =>
 			(...subargs) => readFile(storage, createReadFileCallback(...args, ...subargs));
 
-		var createReadFileCallback = (files, ...promise) =>
-			(...previous) => Promise.all(files.map(createMapCallback(...promise, createPrevious(...previous))));
+		var createReadFileCallback = (files, callback, resolve) =>
+			(...previous) => createFileCheckPromise(files, ...previous).then(resolve); // <-- Continue from here...
 
-		var createMapCallback = (callback, resolve, reject, previous) => {};
+		var createFileCheckPromise = (files, ...previous) =>
+			Promise.all(files.map(createMapCallback(createPrevious(...previous))));
+
+		var createMapCallback = (previous) =>
+			(fname) => createSubPromise(fname, previous);
 
 		var createPrevious = (error, data) =>
 			error ? create(null) : parseJSON(String(data));
