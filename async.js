@@ -58,21 +58,26 @@
 			new Promise(createSubPromiseCallback(resolvePath(fname), previous));
 
 		var createSubPromiseCallback = (fname, previous) =>
-			(...args) => fstat(fname, createStatCallback(fname, previous[fname], ...args));
+			(...args) => fstat(fname, createStatCallback(fname, previous, ...args));
 
 		var createStatCallback = (fname, previous, resolve) =>
 			(...args) => resolve(createSubPromiseResolve(fname, previous, ...args));
 
 		var createSubPromiseResolve = (fname, previous, error, info) => {
+			let prevmtime = previous[fname];
 			if (previous) {
 				if (error) {
-					return new ChangeDetail('delete', fname);
+					delete previous[fname];
+					return new ChangeDetail('delete', fname, prevmtime, null);
 				}
-				if (info.mtime.getTime() > previous) {
-					return new ChangeDetail('update', fname);
+				let currmtime = info.mtime.getTime();
+				if (currmtime > previous) {
+					previous[fname] = currmtime;
+					return new ChangeDetail('update', fname, prevmtime, currmtime);
 				}
-			} else if (!error) {
-				return new ChangeDetail('create', fname);
+			} else if (info) {
+				let currmtime = previous[fname] = info.mtime.getTime();
+				return new ChangeDetail('create', fname, null, currmtime);
 			}
 		};
 
@@ -85,10 +90,11 @@
 
 	module.exports = class extends Watcher {};
 
-	function ChangeDetail(type, name) {
+	function ChangeDetail(type, name, prevmtime, currmtime) {
 		this.type = type;
 		this.name = name;
-		freeze(this);
+		this.prevmtime = prevmtime;
+		this.currmtime = currmtime;
 	}
 
 })(module);
