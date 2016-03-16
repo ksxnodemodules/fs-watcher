@@ -1,0 +1,7 @@
+
+{
+	"main": "index.js",
+	"scripts": {
+		"test": "node --es-staging ./main.js"
+	}
+}
