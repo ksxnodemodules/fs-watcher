@@ -1,5 +1,4 @@
 *.log
 quick-test/*
 !quick-test/*.md
-*/temp/*
-!*/temp/*.md
+*/temp
