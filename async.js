@@ -17,7 +17,6 @@
 
 		var watch = (files, callback) => {
 			return new Promise(createPromiseCallback(files, callback));
-			Promise.all(files.map((fname) => createSubPromise(fname, previous)));
 		};
 
 		var createPromiseCallback = (...args) =>
@@ -39,22 +38,20 @@
 			error ? create(null) : parseJSON(String(data));
 
 		var repeatCallback = (changes, callback, resolve, reject) => {
-			// var intervalCallback = () =>
-			// 	changes.length ? callback(changes, subresolve, subreject) : subresolve();
-			var repeat = () => {
-				if (changes.length) {
-					// continue from here...
-				}
-			};
-			var loop = setInterval(repeat);
+			var stop = false;
 			var subresolve = (...args) => {
-				clearInterval(loop);
+				stop = true;
 				resolve(...args);
 			};
 			var subreject = (...args) => {
-				clearInterval(loop);
+				stop = true;
 				reject(...args);
 			};
+			if (changes.length) {
+				callback(changes, subresolve, subreject);
+				return stop || watch(files, callback);
+			}
+			resolve();
 		};
 
 		var createSubPromise = (fname, previous) =>
