@@ -13,55 +13,87 @@
 
 	function Watcher(config) {
 
-		var storage = resolvePath(config.storage);
+		var storagePath = resolvePath(config.storage);
+		var storageObject = null;
 
 		var watch = (files, callback) => {
-			return new Promise(createPromiseCallback(files, callback));
+
+			var main = (resolve, reject) =>
+				watchPath(files, callback).then(resolve, reject);
+
+			return new Promise(main);
+
 		};
 
-		var createPromiseCallback = (...args) =>
-			(...subargs) => readFile(storage, createReadFileCallback(...args, ...subargs));
+		// var watch = (files, callback) =>
+		// 	new Promise((resolve, reject) => watchPath(files, callback).then(resolve, reject));
 
-		var createReadFileCallback = (files, ...promise) =>
-			(...previous) => createFileCheckPromise(files, ...previous).then(createCallbackCaller(...promise));
+		// var watchPath = (files, callback) =>
+		// 	new Promise((resolve, reject) => readFile(storagePath, createReadFileCallback(files, callback, resolve, reject)));
 
-		var createFileCheckPromise = (files, ...previous) =>
-			Promise.all(files.map(createMapCallback(createPrevious(...previous))));
+		// var createReadFileCallback = (files, callback, resolve, reject) => (error, data) => {
+		// 	createStorageObject(error, data);
+		// 	watchObject(files, callback).then(resolve, reject);
+		// };
 
-		var createCallbackCaller = (...args) =>
-			(changes) => repeatCallback(changes.filter(Boolean), ...args);
+		// var watch = (files, callback) => {
+		// 	return new Promise(createPromiseCallback(files, callback)); // <-- Continue from here...
+		// };
 
-		var createMapCallback = (previous) =>
-			(fname) => createSubPromise(fname, previous);
+		// var watch = (files, callback) => {
+		// 	return new Promise((resolve, reject) => watchFile(files, callback).then(resolve, reject)); // <-- Continue from here...
+		// }
 
-		var createPrevious = (error, data) =>
-			error ? create(null) : parseJSON(String(data));
+		// var watchFile = (files, callback) =>
+		// 	new Promise((resolve, reject) => readFile(storage, (error, data) => watchObject(createPrevious(error, data)).then(resolve, reject)));
 
-		var repeatCallback = (changes, callback, resolve, reject) => {
-			var stop = false;
-			var subresolve = (...args) => {
-				stop = true;
-				resolve(...args);
-			};
-			var subreject = (...args) => {
-				stop = true;
-				reject(...args);
-			};
-			if (changes.length) {
-				callback(changes, subresolve, subreject);
-				return stop || watch(files, callback);
-			}
-			resolve();
-		};
+		// var watchObject = (previous) =>
 
-		var createSubPromise = (fname, previous) =>
-			new Promise(createSubPromiseCallback(resolvePath(fname), previous));
+		// var createPromiseCallback = (...args) =>
+		// 	(...subargs) => readFile(storage, createReadFileCallback(...args, ...subargs));
 
-		var createSubPromiseCallback = (fname, previous) =>
-			(...args) => fstat(fname, createStatCallback(fname, previous, ...args));
+		// var createReadFileCallback = (files, ...promise) =>
+		// 	(...previous) => createFileCheckPromise(files, ...previous).then(createCallbackCaller(...promise));
 
-		var createStatCallback = (fname, previous, resolve) =>
-			(...args) => resolve(createSubPromiseResolve(fname, previous, ...args));
+		// var createFileCheckPromise = (files, ...previous) =>
+		// 	Promise.all(files.map(createMapCallback(createPrevious(...previous))));
+
+		// ////////////////////////////////////
+
+		// var createCallbackCaller = (...args) =>
+		// 	(changes) => repeatCallback(changes.filter(Boolean), ...args);
+
+		// var createMapCallback = (previous) =>
+		// 	(fname) => createSubPromise(fname, previous);
+
+		// var createPrevious = (error, data) =>
+		// 	error ? create(null) : parseJSON(String(data));
+
+		// var repeatCallback = (changes, callback, resolve, reject) => {
+		// 	var stop = false;
+		// 	var subresolve = (...args) => {
+		// 		stop = true;
+		// 		resolve(...args);
+		// 	};
+		// 	var subreject = (...args) => {
+		// 		stop = true;
+		// 		reject(...args);
+		// 	};
+		// 	if (changes.length) {
+		// 		callback(changes, subresolve, subreject);
+		// 		return stop || watch(files, callback);
+		// 	}
+		// 	resolve();
+		// };
+
+		// var createSubPromise = (fname, previous) =>
+		// 	new Promise(createSubPromiseCallback(resolvePath(fname), previous));
+
+		// var createSubPromiseCallback = (fname, previous) =>
+		// 	(...args) => fstat(fname, createStatCallback(fname, previous, ...args));
+
+		// var createStatCallback = (fname, previous, resolve) =>
+		// 	(...args) => resolve(createSubPromiseResolve(fname, previous, ...args));
 
 		var createSubPromiseResolve = (fname, previous, error, info) => {
 			let prevmtime = previous[fname];
