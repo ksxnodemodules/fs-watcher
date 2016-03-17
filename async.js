@@ -11,17 +11,59 @@
 	var fstat = fs.fstat;
 	var resolvePath = path.resolve;
 
+	const DEFAULT_ONSTORESUCCESS = () => {};
+	const DEFAULT_ONSTOREFAIL = (error) => {throw error};
+
+	var _getfunc = (val, def) =>
+		typeof val === 'function' ? val : def;
+
 	function Watcher(config) {
 
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
 
-		var watch = (files, callback) => {
+		var watch = (files, callback, onstoresuccess, onstorefail) => {
 
-			var main = (resolve, reject) =>
-				watchPath(files, callback).then(resolve, reject);
+			files = files.map((fname) => resolvePath(fname));
 
-			return new Promise(main);
+			var main = (resolve, reject) => {
+				readFile(storage, (error, data) => {
+					storageObject = error ? create(null) : parseJSON(String(data));
+					watchObject(files).then(resolve, reject);
+				});
+			};
+
+			// var watchObject = (files) =>
+			// 	new Promise((resolve, reject) => createSubPromise(files).then(resolve, reject));
+
+			var watchObject = (files) =>
+				Promise.all(files.map(createSubPromise));
+
+			var createSubPromise = (fname) =>
+				new Promise((resolve, reject) => fstat(fname, createStatCallback(fname, resolve, reject)));
+
+			var createStatCallback = (fname, resolve) =>
+				(error, info) => resolve(createSubPromiseResolve(fname, error, info));
+
+			var createSubPromiseResolve = (fname, error, info) => {
+				let prevmtime = storageObject[fname];
+				if (storageObject) {
+					if (error) {
+						delete storageObject[fname];
+						return new ChangeDetail('delete', fname, prevmtime, null);
+					}
+					let currmtime = info.mtime.getTime();
+					if (currmtime > prevmtime) {
+						storageObject[fname] = currmtime;
+						return new ChangeDetail('update', fname, prevmtime, currmtime);
+					}
+				} else if (info) {
+					let currmtime = storageObject[fname] = info.mtime.getTime();
+					return new ChangeDetail('create', fname, null, currmtime);
+				}
+			};
+
+			return new Promise(main).then(writeStorage);
 
 		};
 
@@ -95,23 +137,23 @@
 		// var createStatCallback = (fname, previous, resolve) =>
 		// 	(...args) => resolve(createSubPromiseResolve(fname, previous, ...args));
 
-		var createSubPromiseResolve = (fname, previous, error, info) => {
-			let prevmtime = previous[fname];
-			if (previous) {
-				if (error) {
-					delete previous[fname];
-					return new ChangeDetail('delete', fname, prevmtime, null);
-				}
-				let currmtime = info.mtime.getTime();
-				if (currmtime > previous) {
-					previous[fname] = currmtime;
-					return new ChangeDetail('update', fname, prevmtime, currmtime);
-				}
-			} else if (info) {
-				let currmtime = previous[fname] = info.mtime.getTime();
-				return new ChangeDetail('create', fname, null, currmtime);
-			}
-		};
+		// var createSubPromiseResolve = (fname, previous, error, info) => {
+		// 	let prevmtime = previous[fname];
+		// 	if (previous) {
+		// 		if (error) {
+		// 			delete previous[fname];
+		// 			return new ChangeDetail('delete', fname, prevmtime, null);
+		// 		}
+		// 		let currmtime = info.mtime.getTime();
+		// 		if (currmtime > previous) {
+		// 			previous[fname] = currmtime;
+		// 			return new ChangeDetail('update', fname, prevmtime, currmtime);
+		// 		}
+		// 	} else if (info) {
+		// 		let currmtime = previous[fname] = info.mtime.getTime();
+		// 		return new ChangeDetail('create', fname, null, currmtime);
+		// 	}
+		// };
 
 		return {
 			'watch': watch,
