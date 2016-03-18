@@ -43,8 +43,10 @@
 					resolve();
 				}
 				callback(error, this);
-			});
+			}).then(() => watchImmedialy = true);
 		});
+
+		var watchImmedialy = false;
 
 		var watch = (files, onchange, onstore) => {
 
@@ -54,7 +56,10 @@
 			var stop = false;
 
 			var main = (resolve, reject) =>
-				storagePromise.then(() => watchObject(files, createStopFunction(resolve), createStopFunction(reject)));
+				howToWatch(() => watchObject(files, createStopFunction(resolve), createStopFunction(reject)));
+
+			var howToWatch = (watch) =>
+				watchImmedialy ? watch() : storagePromise.then(watch);
 
 			var createStopFunction = (decide) => _returnf((...args) => {
 				stop = true;
