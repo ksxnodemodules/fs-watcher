@@ -8,36 +8,55 @@
 	var freeze = Object.freeze;
 	var parseJSON = JSON.parse;
 	var readFile = fs.readFile;
+	var writeFile = fs.writeFile;
 	var fstat = fs.fstat;
 	var resolvePath = path.resolve;
 
-	const DEFAULT_ONSTORESUCCESS = () => {};
-	const DEFAULT_ONSTOREFAIL = (error) => {throw error};
+	const DEFAULT_ONSTORE = (error) => {
+		if (error) throw error;
+	};
 
 	var _getfunc = (val, def) =>
 		typeof val === 'function' ? val : def;
+
+	var _returnf = (fn) => (...args) => fn(...args);
 
 	function Watcher(config) {
 
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
 
-		var watch = (files, callback, onstoresuccess, onstorefail) => {
+		var watch = (files, callback, onstore) => {
 
 			files = files.map((fname) => resolvePath(fname));
+
+			var stop = false;
 
 			var main = (resolve, reject) => {
 				readFile(storage, (error, data) => {
 					storageObject = error ? create(null) : parseJSON(String(data));
-					watchObject(files).then(resolve, reject);
+					watchObject(files, resolve, reject).then(() => stop || resolve());
 				});
 			};
 
-			// var watchObject = (files) =>
-			// 	new Promise((resolve, reject) => createSubPromise(files).then(resolve, reject));
+			var watchObject = (files, resolve, reject) => {
+				createWatchObjectPromise(files)
+					.then((changes) => callback(changes, createStopFunction(resolve), createStopFunction(reject)))
+					.then((changes) => stop || nextCall(changes))
+				;
+			};
 
-			var watchObject = (files) =>
+			var nextCall = (changes) => {
+
+			};
+
+			var createWatchObjectPromise = (files) =>
 				Promise.all(files.map(createSubPromise));
+
+			var createStopFunction = (decide) => _returnf((...args) => {
+				stop = true;
+				decide(...args);
+			});
 
 			var createSubPromise = (fname) =>
 				new Promise((resolve, reject) => fstat(fname, createStatCallback(fname, resolve, reject)));
@@ -62,6 +81,9 @@
 					return new ChangeDetail('create', fname, null, currmtime);
 				}
 			};
+
+			var writeStorage = () =>
+				writeFile(storagePath, JSON.stringify(storageObject), _getfunc(onstore, DEFAULT_ONSTORE));
 
 			return new Promise(main).then(writeStorage);
 
