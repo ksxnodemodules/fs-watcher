@@ -45,7 +45,7 @@
 						storageObject = JSON.parse(String(data));
 					} catch (error) {
 						callbackError = error;
-						reject(error); // Now I reject()
+						reject(error); // Now is the time to reject()
 					};
 					resolve();
 				}
