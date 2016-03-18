@@ -33,18 +33,24 @@
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
 
-		var storagePromise = new Promise((resolve) => {
+		var storagePromise = new Promise((resolve, reject) => {
 			readFile(storagePath, (error, data) => {
+				var callbackError = null;
 				if (error) {
 					storageObject = create(null);
 					resolve(); // You may wonder why not 'reject()',
 								// it's because a file located at 'storagePath' may not exist in the beginning
 				} else {
-					storageObject = JSON.parse(String(data));
+					try {
+						storageObject = JSON.parse(String(data));
+					} catch (error) {
+						callbackError = error;
+						reject(error); // Now I reject()
+					};
 					resolve();
 				}
 				watchImmedialy = true;
-				callback(error, this);
+				callback(callbackError, this);
 			});
 		});
 
