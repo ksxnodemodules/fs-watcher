@@ -35,7 +35,7 @@
 
 		var storagePromise = new Promise((resolve, reject) => {
 			readFile(storagePath, (error, data) => {
-				var callbackError = null;
+				var callbackArguments = [null, this];
 				if (error) {
 					storageObject = create(null);
 					resolve(); // You may wonder why not 'reject()',
@@ -44,7 +44,7 @@
 					try {
 						storageObject = JSON.parse(String(data));
 					} catch (error) {
-						callbackError = error;
+						callbackArguments = [error, null];
 						reject(error); // Now is the time to reject()
 					};
 					resolve();
