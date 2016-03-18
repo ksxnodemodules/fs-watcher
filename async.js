@@ -43,8 +43,9 @@
 					storageObject = JSON.parse(String(data));
 					resolve();
 				}
+				watchImmedialy = true;
 				callback(error, this);
-			}).then(() => watchImmedialy = true);
+			});
 		});
 
 		var watchImmedialy = false;
