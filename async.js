@@ -33,11 +33,12 @@
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
 
-		var storagePromise = new Promise((resolve, reject) => {
+		var storagePromise = new Promise((resolve) => {
 			readFile(storagePath, (error, data) => {
 				if (error) {
 					storageObject = create(null);
-					reject(error);
+					resolve(); // You may wonder why not 'reject()',
+								// it's because a file located at 'storagePath' may not exist in the beginning
 				} else {
 					storageObject = JSON.parse(String(data));
 					resolve();
