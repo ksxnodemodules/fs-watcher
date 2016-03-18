@@ -117,7 +117,7 @@
 		};
 
 		return {
-			'watch': watch,
+			'watch': _returnf(watch),
 			'__proto__': this
 		};
 
