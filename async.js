@@ -50,7 +50,7 @@
 					resolve();
 				}
 				watchImmedialy = true;
-				callback(...callbackArguments, this);
+				callback(...callbackArguments);
 			});
 		});
 
