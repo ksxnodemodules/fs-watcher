@@ -12,9 +12,12 @@
 	var fstat = fs.fstat;
 	var resolvePath = path.resolve;
 
-	const DEFAULT_ONSTORE = (error) => {
-		if (error) throw error;
-	};
+	const DEFAULT_ONSTORE = (error) => error && _throw(error);
+
+	var _throw = (error) => {throw error};
+
+	var _requiretype = (value, type) =>
+		typeof value === type ? value : _throw(new TypeError(`${value} is not a ${type}`));
 
 	var _getfunc = (val, def) =>
 		typeof val === 'function' ? val : def;
@@ -26,8 +29,9 @@
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
 
-		var watch = (files, callback, onstore) => {
+		var watch = (files, onchange, onstore) => {
 
+			_requiretype(onchange, 'function');
 			files = files.map((fname) => resolvePath(fname));
 
 			var stop = false;
@@ -35,33 +39,33 @@
 			var main = (resolve, reject) => {
 				readFile(storage, (error, data) => {
 					storageObject = error ? create(null) : parseJSON(String(data));
-					watchObject(files, resolve, reject);
+					watchObject(files, createStopFunction(resolve), createStopFunction(reject));
 				});
 			};
-
-			var watchObject = (files, resolve, reject) => {
-				createWatchObjectPromise(files)
-					.then((changes) => callback(changes, createStopFunction(resolve), createStopFunction(reject)))
-					.then((changes) => stop || repeat(changes, resolve, reject))
-				;
-			};
-
-			var repeat = (changes, resolve, reject) => {
-				if (changes.length) {
-					setTimeout(() => watchObject(changes.map((detail) => detail.name), resolve, reject));
-				} else {
-					stop = true;
-					resolve();
-				}
-			};
-
-			var createWatchObjectPromise = (files) =>
-				Promise.all(files.map(createSubPromise));
 
 			var createStopFunction = (decide) => _returnf((...args) => {
 				stop = true;
 				decide(...args);
 			});
+
+			var watchObject = (files, ...promise) => {
+				createWatchObjectPromise(files).then((changes) => {
+					if (changes.length) {
+						onchange(changes, ...promise);
+						stop || repeat(changes, ...promise);
+					} else {
+						resolve();
+					}
+				});
+			};
+
+			var repeat = (changes, resolve, reject) =>
+				watchObject(getFiles(changes), resolve, reject);
+
+			var getFiles = (changes) => changes.map((detail) => detail.name);
+
+			var createWatchObjectPromise = (files) =>
+				Promise.all(files.map(createSubPromise));
 
 			var createSubPromise = (fname) =>
 				new Promise((resolve, reject) => fstat(fname, createStatCallback(fname, resolve, reject)));
