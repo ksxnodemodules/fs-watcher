@@ -16,6 +16,8 @@
 
 	var _throw = (error) => {throw error};
 
+	var _throwif = (error) => error && _throw(error);
+
 	var _requiretype = (value, type) =>
 		typeof value === type ? value : _throw(new TypeError(`${value} is not a ${type}`));
 
@@ -24,10 +26,25 @@
 
 	var _returnf = (fn) => (...args) => fn(...args);
 
-	function Watcher(config) {
+	function Watcher(config, callback) {
+
+		callback = _getfunc(callback, _throwif);
 
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
+
+		var storagePromise = new Promise((resolve, reject) => {
+			readFile(storagePath, (error, data) => {
+				if (error) {
+					storageObject = create(null);
+					reject(error);
+				} else {
+					storageObject = JSON.parse(String(data));
+					resolve();
+				}
+				callback(error, this);
+			});
+		});
 
 		var watch = (files, onchange, onstore) => {
 
@@ -36,12 +53,8 @@
 
 			var stop = false;
 
-			var main = (resolve, reject) => {
-				readFile(storage, (error, data) => {
-					storageObject = error ? create(null) : parseJSON(String(data));
-					watchObject(files, createStopFunction(resolve), createStopFunction(reject));
-				});
-			};
+			var main = (resolve, reject) =>
+				storagePromise.then(() => watchObject(files, createStopFunction(resolve), createStopFunction(reject)));
 
 			var createStopFunction = (decide) => _returnf((...args) => {
 				stop = true;
