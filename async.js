@@ -4,7 +4,6 @@
 
 	var fs = require('fs');
 	var path = require('path');
-	var DeepIterable = require('x-iterable/deep-iterable');
 
 	var create = Object.create;
 	var freeze = Object.freeze;
@@ -109,16 +108,20 @@
 					case 'function':
 						return new Promise(material);
 					case 'object':
+						if (!material) {
+							break;
+						}
 						if (material instanceof Promise) {
 							return new Promise((...decide) => promise.then(...decide));
 						}
-						let deeper = (element) =>
-							typeof element === 'object' && !(element instanceof Promise);
-						let promise = new DeepIterable(material, deeper).map(createSubPromise);
-						return Promise.all(promise);
-					default:
-						throw new TypeError(`${material} is not a valid SubPromiseArgument`);
+						if (typeof material[Symbol.iterator] === 'function') {
+							let promise = [...material]
+								.map(createSubPromise)
+								.map((promise) => new Promise((...decide) => promise.then(...decide)));
+							return Promise.all(promise);
+						}
 				}
+				throw new TypeError(`${material} is not a valid SubPromiseArgument`);
 			}
 
 			var createStatCallback = (fname, resolve) =>

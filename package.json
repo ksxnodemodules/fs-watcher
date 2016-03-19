@@ -15,9 +15,7 @@
 	"engines": {
 		"node": ">= 5.0.0"
 	},
-	"dependencies": {
-		"x-iterable": ">=2.4.5 <3.0.0"
-	},
+	"dependencies": {},
 	"main": "index.js",
 	"bugs": {
 		"url": "https://github.com/ksxnodemodules/fs-watcher/issues"
