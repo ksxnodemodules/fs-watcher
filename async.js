@@ -109,9 +109,15 @@
 					case 'function':
 						return new Promise(material);
 					case 'object':
-						let promise = new DeepIterable(material, (element) => !(element instanceof Promise))
-							.map((promise) => new Promise((...decide) => promise.then(...decide)));
+						if (material instanceof Promise) {
+							return new Promise((...decide) => promise.then(...decide));
+						}
+						let deeper = (element) =>
+							typeof element === 'object' && !(element instanceof Promise);
+						let promise = new DeepIterable(material, deeper).map(createSubPromise);
 						return Promise.all(promise);
+					default:
+						throw new TypeError(`${material} is not a valid SubPromiseArgument`);
 				}
 			}
 
