@@ -59,15 +59,15 @@
 
 		var allPromises = create(null);
 
-		var watch = (files, onchange, onstore) => {
+		var watch = (dependencies, onchange, onstore) => {
 
 			_requiretype(onchange, 'function');
-			files = files.map((fname) => resolvePath(fname));
+			dependencies = dependencies.map((fname) => resolvePath(fname));
 
 			var stop = false;
 
 			var main = (resolve, reject) =>
-				howToWatch(() => watchObject(files, createStopFunction(resolve), createStopFunction(reject)));
+				howToWatch(() => watchObject(dependencies, createStopFunction(resolve), createStopFunction(reject)));
 
 			var howToWatch = (watch) =>
 				watchImmedialy ? watch() : storagePromise.then(watch);
@@ -77,8 +77,8 @@
 				decide(...args);
 			});
 
-			var watchObject = (files, ...promise) => {
-				createWatchObjectPromise(files).then((changes) => {
+			var watchObject = (dependencies, ...promise) => {
+				createWatchObjectPromise(dependencies).then((changes) => {
 					if (changes.length) {
 						onchange(changes, ...promise);
 						stop || repeat(changes, ...promise);
@@ -93,36 +93,36 @@
 
 			var getFiles = (changes) => changes.map((detail) => detail.name);
 
-			var createWatchObjectPromise = (files) =>
-				Promise.all(files.map(createSubPromise));
+			var createWatchObjectPromise = (dependencies) =>
+				Promise.all(dependencies.map(createSubPromise));
 
-			var createSubPromise = (material) => {
-				switch (typeof material) {
+			var createSubPromise = (dependency) => {
+				switch (typeof dependency) {
 					case 'string':
-						let promise = allPromises[material];
+						let promise = allPromises[dependency];
 						if (!promise) {
-							let subPromiseCallback = (resolve, reject) => fstat(material, createStatCallback(material, resolve, reject));
-							promise = allPromises[material] = new Promise(subPromiseCallback);
+							let subPromiseCallback = (resolve, reject) => fstat(dependency, createStatCallback(dependency, resolve, reject));
+							promise = allPromises[dependency] = new Promise(subPromiseCallback);
 						}
 						return promise;
 					case 'function':
-						return new Promise(material);
+						return new Promise(dependency);
 					case 'object':
-						if (!material) {
+						if (!dependency) {
 							break;
 						}
-						if (material instanceof Promise) {
+						if (dependency instanceof Promise) {
 							return new Promise((...decide) => promise.then(...decide));
 						}
-						if (typeof material[Symbol.iterator] === 'function') {
-							let promise = [...material]
+						if (typeof dependency[Symbol.iterator] === 'function') {
+							let promise = [...dependency]
 								.map(createSubPromise)
 								.map((promise) => new Promise((...decide) => promise.then(...decide)))
 							;
 							return Promise.all(promise);
 						}
 				}
-				throw new TypeError(`${material} is not a valid SubPromiseArgument`);
+				throw new TypeError(`${dependency} is not a valid Dependency`);
 			}
 
 			var createStatCallback = (fname, resolve) =>
