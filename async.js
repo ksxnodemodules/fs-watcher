@@ -4,7 +4,9 @@
 
 	var fs = require('fs');
 	var path = require('path');
+	var DeepIterable = require('x-iterable/deep-iterable');
 
+	var create = Object.create;
 	var freeze = Object.freeze;
 	var parseJSON = JSON.parse;
 	var readFile = fs.readFile;
@@ -56,6 +58,8 @@
 
 		var watchImmedialy = false;
 
+		var allPromises = create(null);
+
 		var watch = (files, onchange, onstore) => {
 
 			_requiretype(onchange, 'function');
@@ -93,8 +97,22 @@
 			var createWatchObjectPromise = (files) =>
 				Promise.all(files.map(createSubPromise));
 
-			var createSubPromise = (fname) =>
-				new Promise((resolve, reject) => fstat(fname, createStatCallback(fname, resolve, reject)));
+			var createSubPromise = (material) => {
+				switch (typeof material) {
+					case 'string':
+						let promise = allPromises[material];
+						if (!promise) {
+							promise = new Promise((resolve, reject) => fstat(material, createStatCallback(material, resolve, reject)));
+						}
+						return promise;
+					case 'function':
+						return new Promise(material);
+					case 'object':
+						let promise = new DeepIterable(material, (element) => !(element instanceof Promise))
+							.map((promise) => new Promise((...decide) => promise.then(...decide)));
+						return Promise.all(promise);
+				}
+			}
 
 			var createStatCallback = (fname, resolve) =>
 				(error, info) => resolve(createSubPromiseResolve(fname, error, info));
