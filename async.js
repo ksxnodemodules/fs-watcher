@@ -102,7 +102,8 @@
 					case 'string':
 						let promise = allPromises[material];
 						if (!promise) {
-							promise = new Promise((resolve, reject) => fstat(material, createStatCallback(material, resolve, reject)));
+							let subPromiseCallback = (resolve, reject) => fstat(material, createStatCallback(material, resolve, reject));
+							promise = allPromises[material] = new Promise(subPromiseCallback);
 						}
 						return promise;
 					case 'function':
