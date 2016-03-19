@@ -117,7 +117,8 @@
 						if (typeof material[Symbol.iterator] === 'function') {
 							let promise = [...material]
 								.map(createSubPromise)
-								.map((promise) => new Promise((...decide) => promise.then(...decide)));
+								.map((promise) => new Promise((...decide) => promise.then(...decide)))
+							;
 							return Promise.all(promise);
 						}
 				}
