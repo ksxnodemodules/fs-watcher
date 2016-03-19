@@ -2,3 +2,4 @@
 quick-test/*
 !quick-test/*.md
 */temp
+node_modules
