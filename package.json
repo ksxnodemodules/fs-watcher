@@ -16,6 +16,9 @@
 		"node": ">= 5.0.0"
 	},
 	"dependencies": {},
+	"devDependencies": {
+		"fs-force": ">= 0.0.0"
+	},
 	"main": "index.js",
 	"bugs": {
 		"url": "https://github.com/ksxnodemodules/fs-watcher/issues"

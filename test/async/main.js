@@ -3,9 +3,12 @@
 	'use strict';
 
 	var joinPath = require('path').join;
+	var mkdirSync = require('fs-force/mkdir-sync');
 	var listdir = require('../listdir.js');
 
-	process.chdir(joinPath(__dirname, 'temp'));
+	var cwd = joinPath(__dirname, 'temp');
+	mkdirSync(cwd);
+	process.chdir(cwd);
 
 	console.log('Testing Async');
 
