@@ -81,17 +81,12 @@
 				createWatchObjectPromise(dependencies).then((changes) => {
 					if (changes.length) {
 						onchange(changes, ...promise);
-						stop || repeat(changes, ...promise);
+						stop || watchObject(...promise);
 					} else {
 						resolve();
 					}
 				});
 			};
-
-			var repeat = (changes, resolve, reject) =>
-				watchObject(getFiles(changes), resolve, reject);
-
-			var getFiles = (changes) => changes.map((detail) => detail.name);
 
 			var createWatchObjectPromise = (dependencies) =>
 				Promise.all(dependencies.map(createSubPromise));
