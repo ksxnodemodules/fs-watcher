@@ -77,11 +77,11 @@
 				decide(...args);
 			});
 
-			var watchObject = (dependencies, ...promise) => {
+			var watchObject = (dependencies, ...decide) => {
 				createWatchObjectPromise(dependencies).then((changes) => {
 					if (changes.length) {
-						onchange(changes, ...promise);
-						stop || watchObject(...promise);
+						onchange(changes, ...decide);
+						stop || watchObject(...decide);
 					} else {
 						resolve();
 					}
