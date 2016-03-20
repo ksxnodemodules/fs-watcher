@@ -62,7 +62,7 @@
 		var watch = (dependencies, onchange, onstore) => {
 
 			_requiretype(onchange, 'function');
-			dependencies = dependencies.map((fname) => resolvePath(fname));
+			dependencies = dependencies.map((fname) => typeof fname === 'string' ? resolvePath(fname) : fname);
 
 			var stop = false;
 
