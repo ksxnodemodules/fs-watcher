@@ -78,7 +78,7 @@
 			});
 
 			var watchObject = (dependencies, ...decide) => {
-				createWatchObjectPromise(dependencies).then((changes) => {
+				createSubPromise(dependencies).then((changes) => {
 					if (changes.length) {
 						onchange(changes, ...decide);
 						stop || watchObject(...decide);
@@ -87,9 +87,6 @@
 					}
 				});
 			};
-
-			var createWatchObjectPromise = (dependencies) =>
-				Promise.all(dependencies.map(createSubPromise));
 
 			var createSubPromise = (dependency) => {
 				switch (typeof dependency) {
