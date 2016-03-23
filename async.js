@@ -12,6 +12,7 @@
 	var writeFile = fs.writeFile;
 	var fstat = fs.fstat;
 	var resolvePath = path.resolve;
+	var parseJSON = JSON.parse;
 
 	const DEFAULT_ONSTORE = (error) => error && _throw(error);
 
@@ -26,6 +27,9 @@
 		typeof val === 'function' ? val : def;
 
 	var _returnf = (fn) => (...args) => fn(...args);
+
+	var _getstore = (json) =>
+		json ? parseJSON(json) : create(null);
 
 	function Watcher(config, callback) {
 
@@ -43,7 +47,7 @@
 								// it's because a file located at 'storagePath' may not exist in the beginning
 				} else {
 					try {
-						storageObject = JSON.parse(String(data));
+						storageObject = _getstore(String(data));
 					} catch (error) {
 						callbackArguments = [error, null];
 						reject(error); // Now is the time to reject()
