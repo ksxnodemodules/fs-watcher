@@ -5,6 +5,7 @@
 	var joinPath = require('path').join;
 	var mkdirSync = require('fs-force/mkdir-sync');
 	var listdir = require('../listdir.js');
+	var callback = require('../callback.js');
 
 	var cwd = joinPath(__dirname, 'temp');
 	mkdirSync(cwd);
@@ -18,6 +19,6 @@
 	});
 	watcher.watch(listdir('target'), (changes) => {
 		changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
-	}).then(() => console.log('finish'));
+	}).then(callback.onfulfilled, callback.onrejected);
 
 })(module);
