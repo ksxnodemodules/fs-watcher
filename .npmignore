@@ -1,6 +1,6 @@
 *.log
 quick-test
 test
-*/temp
+temp
 node_modules
 .gitignore
