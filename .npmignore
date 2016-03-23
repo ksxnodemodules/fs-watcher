@@ -3,3 +3,4 @@ quick-test
 test
 */temp
 node_modules
+.gitignore
