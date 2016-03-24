@@ -7,14 +7,19 @@
 	var callback = require('../callback.js');
 
 	const TEMP = joinPath(__dirname, 'temp');
-	const TARGET = joinPath(TEMP, 'target');
+	const TARGETA = joinPath(TEMP, 'target-a');
+	const TARGETB = joinPath(TEMP, 'target-b');
 
-	mkdirSync(TEMP);
+	[TEMP, TARGETA, TARGETB].forEach((dir) => mkdirSync(dir));
 	process.chdir(TEMP);
 
-	var filelist;
+	var filelistA, filelistB;
 	try {
-		filelist = require('./temp/file-list.js').map((fname) => joinPath(TARGET, fname));
+		let filelist = require('./temp/file-list.js');
+		let createCallback = (target) =>
+			(fname) => joinPath(target, fname);
+		filelistA = filelist.a.map(createCallback('a'));
+		filelistB = filelist.b.map(createCallback('b'));
 	} catch (error) {
 		console.error(error);
 		console.error(`Please create file \x1B[33mfile-list.js\x1B[0m inside directory \x1B[33mtemp\x1B[0m before run \x1B[33mnpm test\x1B[0m`);
@@ -28,8 +33,12 @@
 		storage: './storage.json',
 		jsonspace: '\t'
 	});
-	watcher.watch(filelist, (changes) => {
-		changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
-	}).then(callback.onfulfilled, callback.onrejected);
+
+	var message = (changes) =>
+		changes.forEach((item) => console.log(item));
+
+	var promiseA = watcher.watch(filelistA, message).then(callback.onfulfilled, callback.onrejected);
+
+	watcher.watch([...filelistB, promiseA], message).then(callback.onfulfilled, callback.onrejected);
 
 })(module);
