@@ -4,3 +4,5 @@ test
 temp
 node_modules
 .gitignore
+test.sh
+clean.sh
