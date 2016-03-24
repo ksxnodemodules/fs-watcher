@@ -2,7 +2,7 @@
 ((module) => {
     'use strict';
 
-    var onfulfilled = () => console.log('Executed');
+    var onfulfilled = () => console.log('Returned');
 
     var onrejected = (error) => {
         console.error('Failed');
