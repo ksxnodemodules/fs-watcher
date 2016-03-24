@@ -13,6 +13,7 @@
 	var stat = fs.stat;
 	var resolvePath = path.resolve;
 	var parseJSON = JSON.parse;
+	var stringJSON = JSON.stringify;
 
 	const DEFAULT_ONSTORE = (error) => error && _throw(error);
 
@@ -142,8 +143,20 @@
 				}
 			};
 
+			var space = (value) => {
+				switch (typeof value) {
+					case 'undefined':
+					case 'string':
+						return jsonspace = value;
+					case 'number':
+						return jsonspace = parseInt(value);
+				}
+				throw new TypeError(`${value} is invalide`);
+			};
+			var jsonspace = space(config.jsonspace);
+
 			var writeStorage = () =>
-				writeFile(storagePath, JSON.stringify(storageObject), _getfunc(onstore, DEFAULT_ONSTORE));
+				writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace), _getfunc(onstore, DEFAULT_ONSTORE));
 
 			return new Promise(main).then(writeStorage);
 
@@ -151,6 +164,7 @@
 
 		return {
 			'watch': _returnf(watch),
+			'space': _returnf(space),
 			'__proto__': this
 		};
 
