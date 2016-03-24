@@ -4,8 +4,16 @@
 
 	var joinPath = require('path').join;
 	var mkdirSync = require('fs-force/mkdir-sync');
-	var listdir = require('../listdir.js');
 	var callback = require('../callback.js');
+
+	var filelist;
+	try {
+		filelist = require('./temp/file-list.js');
+	} catch (error) {
+		console.error(error);
+		console.error(`Please create file \x1B[33mfile-list.js\x1B[0m inside directory \x1B[33mtemp\x1B[0m before run \x1B[33mnpm test\x1B[0m`);
+		return;
+	}
 
 	var cwd = joinPath(__dirname, 'temp');
 	mkdirSync(cwd);
@@ -18,7 +26,7 @@
 		storage: './storage.json',
 		jsonspace: '\t'
 	});
-	watcher.watch(listdir('target'), (changes) => {
+	watcher.watch(filelist, (changes) => {
 		changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
 	}).then(callback.onfulfilled, callback.onrejected);
 
