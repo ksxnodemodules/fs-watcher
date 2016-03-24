@@ -10,7 +10,7 @@
 	var parseJSON = JSON.parse;
 	var readFile = fs.readFile;
 	var writeFile = fs.writeFile;
-	var fstat = fs.fstat;
+	var stat = fs.stat;
 	var resolvePath = path.resolve;
 	var parseJSON = JSON.parse;
 
@@ -97,7 +97,7 @@
 					case 'string':
 						let promise = allPromises[dependency];
 						if (!promise) {
-							let subPromiseCallback = (resolve, reject) => fstat(dependency, createStatCallback(dependency, resolve, reject));
+							let subPromiseCallback = (resolve, reject) => stat(dependency, createStatCallback(dependency, resolve, reject));
 							promise = allPromises[dependency] = new Promise(subPromiseCallback);
 						}
 						return promise;
