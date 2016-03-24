@@ -15,7 +15,8 @@
 
 	var Watcher = require('fs-watcher/async');
 	var watcher = new Watcher({
-		storage: './storage.json'
+		storage: './storage.json',
+		jsonspace: '\t'
 	});
 	watcher.watch(listdir('target'), (changes) => {
 		changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
