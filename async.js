@@ -143,17 +143,6 @@
 				}
 			};
 
-			var space = (value) => {
-				switch (typeof value) {
-					case 'undefined':
-					case 'string':
-						return jsonspace = value;
-					case 'number':
-						return jsonspace = parseInt(value);
-				}
-				throw new TypeError(`${value} is invalide`);
-			};
-			var jsonspace = space(config.jsonspace);
 
 			var writeStorage = () =>
 				writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace), _getfunc(onstore, DEFAULT_ONSTORE));
@@ -161,6 +150,18 @@
 			return new Promise(main).then(writeStorage);
 
 		};
+
+		var space = (value) => {
+			switch (typeof value) {
+				case 'undefined':
+				case 'string':
+					return jsonspace = value;
+				case 'number':
+					return jsonspace = parseInt(value);
+			}
+			throw new TypeError(`${value} is invalide`);
+		};
+		var jsonspace = space(config.jsonspace);
 
 		return {
 			'watch': _returnf(watch),
