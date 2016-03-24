@@ -2,7 +2,7 @@
 ((module) => {
     'use strict';
 
-    var onfulfilled = () => console.log('Returned');
+    var onfulfilled = () => console.log('\x1B[36mReturned\x1B[0m');
 
     var onrejected = (error) => {
         console.error('Failed');
