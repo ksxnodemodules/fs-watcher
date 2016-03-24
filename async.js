@@ -62,8 +62,6 @@
 
 		var watchImmedialy = false;
 
-		var allPromises = create(null);
-
 		var watch = (dependencies, onchange, onstore) => {
 
 			_requiretype(onchange, 'function');
@@ -82,11 +80,11 @@
 				decide(...args);
 			});
 
-			var watchObject = (dependencies, ...decide) => {
+			var watchObject = (dependencies, resolve, reject) => {
 				createSubPromise(dependencies).then((changes) => {
 					if (changes.length) {
-						onchange(changes, ...decide);
-						stop || watchObject(...decide);
+						onchange(changes, resolve, reject);
+						stop || watchObject(dependencies, resolve, reject);
 					} else {
 						resolve();
 					}
@@ -96,11 +94,8 @@
 			var createSubPromise = (dependency) => {
 				switch (typeof dependency) {
 					case 'string':
-						let promise = allPromises[dependency];
-						if (!promise) {
-							let subPromiseCallback = (resolve, reject) => stat(dependency, createStatCallback(dependency, resolve, reject));
-							promise = allPromises[dependency] = new Promise(subPromiseCallback);
-						}
+						let subPromiseCallback = (resolve, reject) => stat(dependency, createStatCallback(dependency, resolve, reject));
+						promise = new Promise(subPromiseCallback);
 						return promise;
 					case 'function':
 						return new Promise(dependency);
