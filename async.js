@@ -104,7 +104,7 @@
 							break;
 						}
 						if (dependency instanceof Promise) {
-							return new Promise((...decide) => promise.then(...decide));
+							return new Promise((...decide) => dependency.then(...decide));
 						}
 						if (typeof dependency[Symbol.iterator] === 'function') {
 							let promise = [...dependency]
