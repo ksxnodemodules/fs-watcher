@@ -7,7 +7,7 @@
 	var callback = require('../callback.js');
 
 	const TEMP = joinPath(__dirname, 'temp');
-	const TARGET = joinPath(__dirname, 'target');
+	const TARGET = joinPath(TEMP, 'target');
 
 	mkdirSync(TEMP);
 	process.chdir(TEMP);
