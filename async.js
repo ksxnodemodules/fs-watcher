@@ -126,7 +126,7 @@
 
 			var createSubPromiseResolve = (fname, error, info) => {
 				let prevmtime = storageObject[fname];
-				if (storageObject) {
+				if (prevmtime) {
 					if (error) {
 						delete storageObject[fname];
 						return new ChangeDetail('delete', fname, prevmtime, null);
