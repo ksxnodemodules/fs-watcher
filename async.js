@@ -94,7 +94,8 @@
 			var createSubPromise = (dependency) => {
 				switch (typeof dependency) {
 					case 'string':
-						let subPromiseCallback = (resolve, reject) => stat(dependency, createStatCallback(dependency, resolve, reject));
+						let subPromiseCallback = (resolve, reject) =>
+							stat(dependency, createStatCallback(dependency, resolve, reject));
 					 	return new Promise(subPromiseCallback);
 					case 'function':
 						return new Promise(dependency);
@@ -110,7 +111,9 @@
 								.map(createSubPromise)
 								.map((promise) => new Promise((...decide) => promise.then(...decide)))
 							;
-							return Promise.all(promise);
+							let subPromiseCallback = (resolve, reject) =>
+								Promise.all(promise).then((changes) => resolve(changes.filter(Boolean)), reject);
+							return new Promise(subPromiseCallback);
 						}
 				}
 				throw new TypeError(`${dependency} is not a valid Dependency`);
