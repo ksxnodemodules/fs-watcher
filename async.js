@@ -145,7 +145,7 @@
 			var writeStorage = () =>
 				writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace), _getfunc(onstore, DEFAULT_ONSTORE));
 
-			return new Promise(main).then(writeStorage).then(console.error);
+			return new Promise(main).then(writeStorage);
 
 		};
 
