@@ -142,7 +142,6 @@
 				}
 			};
 
-
 			var writeStorage = () =>
 				writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace), _getfunc(onstore, DEFAULT_ONSTORE));
 
