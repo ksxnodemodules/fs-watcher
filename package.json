@@ -15,7 +15,9 @@
 	"engines": {
 		"node": ">= 5.0.0"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"extended-promise": ">0.0.0 <=2.0.0"
+	},
 	"devDependencies": {
 		"fs-force": ">= 0.0.0"
 	},
