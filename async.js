@@ -4,6 +4,7 @@
 
 	var fs = require('fs');
 	var path = require('path');
+	var ExtendedPromise = require('extended-promise');
 
 	var create = Object.create;
 	var freeze = Object.freeze;
@@ -96,26 +97,26 @@
 					case 'string':
 						let subPromiseCallback = (resolve, reject) =>
 							stat(dependency, createStatCallback(dependency, resolve, reject));
-					 	return new Promise(subPromiseCallback);
+					 	return new ExtendedPromise(subPromiseCallback);
 					case 'function':
-						return new Promise(dependency);
+						return new ExtendedPromise(dependency);
 					case 'object':
 						if (!dependency) {
 							break;
 						}
 						if (dependency instanceof Promise) {
 							let subPromiseCallback = (resolve, reject) =>
-								dependency.then((act) => act && resolve(), reject);
-							return new Promise(subPromiseCallback);
+								new ExtendedPromise(dependency).onfulfill((act) => act && resolve(), reject);
+							return new ExtendedPromise(subPromiseCallback);
 						}
 						if (typeof dependency[Symbol.iterator] === 'function') {
 							let promise = [...dependency]
 								.map(createSubPromise)
-								.map((promise) => new Promise((...decide) => promise.then(...decide)))
+								.map((promise) => new ExtendedPromise((...decide) => promise.onfinish(...decide)))
 							;
 							let subPromiseCallback = (resolve, reject) =>
-								Promise.all(promise).then((changes) => resolve(changes.filter(Boolean)), reject);
-							return new Promise(subPromiseCallback);
+								ExtendedPromise.all(promise).onfinish((changes) => resolve(changes.filter(Boolean)), reject);
+							return new ExtendedPromise(subPromiseCallback);
 						}
 				}
 				throw new TypeError(`${dependency} is not a valid Dependency`);
@@ -145,7 +146,7 @@
 			var writeStorage = () =>
 				writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace), _getfunc(onstore, DEFAULT_ONSTORE));
 
-			return new Promise(main).then(writeStorage);
+			return new ExtendedPromise(main).onfulfill(writeStorage);
 
 		};
 
