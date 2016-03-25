@@ -83,7 +83,7 @@
 			var watchObject = (dependencies, resolve, reject, act) => {
 				createSubPromise(dependencies).then((changes) => {
 					if (changes.length) {
-						onchange(changes, resolve, reject);
+						onchange(changes, resolve, reject, act);
 						stop || watchObject(dependencies, resolve, reject, act + 1);
 					} else {
 						resolve(act);
@@ -145,7 +145,7 @@
 			var writeStorage = () =>
 				writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace), _getfunc(onstore, DEFAULT_ONSTORE));
 
-			return new Promise(main).then(writeStorage);
+			return new Promise(main).then(writeStorage).then(console.error);
 
 		};
 
