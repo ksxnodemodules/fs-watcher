@@ -70,7 +70,7 @@
 			var stop = false;
 
 			var main = (resolve, reject) =>
-				howToWatch(() => watchObject(dependencies, createStopFunction(resolve), createStopFunction(reject)));
+				howToWatch(() => watchObject(dependencies, createStopFunction(resolve), createStopFunction(reject), 0));
 
 			var howToWatch = (watch) =>
 				watchImmedialy ? watch() : storagePromise.then(watch);
@@ -80,13 +80,13 @@
 				decide(...args);
 			});
 
-			var watchObject = (dependencies, resolve, reject) => {
+			var watchObject = (dependencies, resolve, reject, act) => {
 				createSubPromise(dependencies).then((changes) => {
 					if (changes.length) {
 						onchange(changes, resolve, reject);
-						stop || watchObject(dependencies, resolve, reject);
+						stop || watchObject(dependencies, resolve, reject, act + 1);
 					} else {
-						resolve();
+						resolve(act);
 					}
 				}, reject);
 			};
@@ -104,7 +104,9 @@
 							break;
 						}
 						if (dependency instanceof Promise) {
-							return new Promise((...decide) => dependency.then(...decide));
+							let subPromiseCallback = (resolve, reject) =>
+								dependency.then((act) => act && resolve(), reject);
+							return new Promise(subPromiseCallback);
 						}
 						if (typeof dependency[Symbol.iterator] === 'function') {
 							let promise = [...dependency]
