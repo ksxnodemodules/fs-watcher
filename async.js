@@ -68,27 +68,18 @@
 			_requiretype(onchange, 'function');
 			dependencies = dependencies.map((fname) => typeof fname === 'string' ? resolvePath(fname) : fname);
 
-			var stop = false;
-
 			var main = (resolve, reject) =>
-				howToWatch(() => watchObject(dependencies, createStopFunction(resolve), createStopFunction(reject)));
+				howToWatch(() => watchObject(dependencies, resolve, reject));
 
 			var howToWatch = (watch) =>
 				watchImmedialy ? watch() : storagePromise.then(watch);
-
-			var createStopFunction = (decide) => _returnf((...args) => {
-				stop = true;
-				decide(...args);
-			});
 
 			var watchObject = (dependencies, resolve, reject) => {
 				createSubPromise(dependencies).then((changes) => {
 					if (changes.length) {
 						onchange(changes, resolve, reject);
-						stop || watchObject(dependencies, resolve, reject);
-					} else {
-						resolve();
 					}
+					resolve(changes);
 				}, reject);
 			};
 
