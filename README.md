@@ -16,7 +16,7 @@ var watcher = new Watcher({
 });
 watcher.watch(['./target/a.txt', './target/b.txt'], (changes) => {
 	changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
-}).then(() => console.log('finish'));
+}).onfinish((times) => console.log(`Finish ${times} times of recursion`));
 ```
 
 ### Synchronous
