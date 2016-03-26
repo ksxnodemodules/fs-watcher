@@ -76,9 +76,7 @@
 
 			var watchObject = (dependencies, resolve, reject) => {
 				createSubPromise(dependencies).then((changes) => {
-					if (changes.length) {
-						onchange(changes, resolve, reject);
-					}
+					changes.length && onchange(changes, resolve, reject);
 					resolve(changes);
 				}, reject);
 			};
