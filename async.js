@@ -5,6 +5,7 @@
 	var fs = require('fs');
 	var path = require('path');
 	var ExtendedPromise = require('extended-promise');
+	var DeepIterable = require('x-iterable/deep-iterable');
 
 	var create = Object.create;
 	var freeze = Object.freeze;
@@ -103,8 +104,10 @@
 								.map(createSubPromise)
 								.map((promise) => new ExtendedPromise((...decide) => promise.onfinish(...decide)))
 							;
+							let getResolveValue = (changes) =>
+								[...new DeepIterable(changes).filter(Boolean)];
 							let subPromiseCallback = (resolve, reject) =>
-								ExtendedPromise.all(promise).onfinish((changes) => resolve(changes.filter(Boolean)), reject);
+								ExtendedPromise.all(promise).onfinish((changes) => resolve(getResolveValue(changes)), reject);
 							return new ExtendedPromise(subPromiseCallback);
 						}
 				}
