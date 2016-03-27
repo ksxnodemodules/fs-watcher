@@ -71,7 +71,7 @@
 		var watch = (dependencies, onchange) => {
 
 			if (done) {
-				throw new Error('Watcher is no longer usable');
+				throw new Error('This Watcher is no longer usable');
 			}
 
 			_requiretype(onchange, 'function');
