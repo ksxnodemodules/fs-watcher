@@ -17,8 +17,6 @@
 	var parseJSON = JSON.parse;
 	var stringJSON = JSON.stringify;
 
-	const DEFAULT_ONSTORE = (error) => error && _throw(error);
-
 	var _throw = (error) => {throw error};
 
 	var _throwif = (error) => error && _throw(error);
@@ -34,10 +32,10 @@
 	var _getstore = (json) =>
 		json ? parseJSON(json) : create(null);
 
-	function Watcher(config, callback) {
+	function Watcher(config,) {
 
-		callback = _getfunc(callback, _throwif);
-
+		var onload = _getfunc(config.onload, _throwif);
+		var onstore = _getfunc(config.onstore, _throwif);
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
 
@@ -58,13 +56,17 @@
 					resolve();
 				}
 				watchImmedialy = true;
-				callback(...callbackArguments);
+				onload(...callbackArguments);
 			});
 		});
 
 		var watchImmedialy = false;
 
-		var watch = (dependencies, onchange, onstore) => {
+		var allPromise = new Set();
+		var writeStorage = () =>
+			writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace), onstore);
+
+		var watch = (dependencies, onchange) => {
 
 			_requiretype(onchange, 'function');
 			dependencies = dependencies.map((fname) => typeof fname === 'string' ? resolvePath(fname) : fname);
@@ -135,10 +137,9 @@
 				}
 			};
 
-			var writeStorage = () =>
-				writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace), _getfunc(onstore, DEFAULT_ONSTORE));
-
-			return new ExtendedPromise(main).onfulfill(writeStorage);
+			var result = new ExtendedPromise(main);
+			allPromise.add(result);
+			return result;
 
 		};
 
