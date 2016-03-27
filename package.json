@@ -16,7 +16,8 @@
 		"node": ">= 5.0.0"
 	},
 	"dependencies": {
-		"extended-promise": ">=0.0.2 <=2.0.0"
+		"extended-promise": ">=0.0.2 <=2.0.0",
+		"x-iterable": ">= 2.4.5"
 	},
 	"devDependencies": {
 		"fs-force": ">= 0.0.0"
