@@ -5,6 +5,7 @@
     var fs = require('fs');
 	var path = require('path');
 	var DeepIterable = require('x-iterable/deep-iterable');
+    var ChangeDetail = require('./utils/change-detail.js');
 
 	var create = Object.create;
 	var freeze = Object.freeze;
