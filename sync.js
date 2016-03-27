@@ -52,6 +52,21 @@
 
             var main = () => {
                 // <-- Continue from here...
+                for (let dependency of dependencies) {
+                    switch (typeof dependency) {
+                        case 'string':
+                            // <--
+                            break;
+                        case 'object':
+                            if (dependency instanceof Array) {
+                                // <--
+                            }
+                            // do not break here
+                        default:
+                            throw new TypeError(`${dependency} is not a valid Dependency`);
+                    }
+                    // <--
+                }
             };
 
             acts.push(main);
