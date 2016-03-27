@@ -32,14 +32,14 @@
 	var _getstore = (json) =>
 		json ? parseJSON(json) : create(null);
 
-	function Watcher(config,) {
+	function Watcher(config) {
 
 		var onload = _getfunc(config.onload, _throwif);
 		var onstore = _getfunc(config.onstore, _throwif);
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
 
-		var storagePromise = new Promise((resolve, reject) => {
+		var storagePromise = new ExtendedPromise((resolve, reject) => {
 			readFile(storagePath, (error, data) => {
 				var callbackArguments = [null, this];
 				if (error) {
@@ -55,16 +55,18 @@
 					};
 					resolve();
 				}
-				watchImmedialy = true;
+				done = true;
 				onload(...callbackArguments);
 			});
 		});
 
-		var watchImmedialy = false;
+		var done = false;
 
 		var allPromise = new Set();
 		var writeStorage = () =>
 			writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace), onstore);
+
+		storagePromise.onfulfill(() => ExtendedPromise.all(allPromise).onfulfill(writeStorage));
 
 		var watch = (dependencies, onchange) => {
 
@@ -72,10 +74,7 @@
 			dependencies = dependencies.map((fname) => typeof fname === 'string' ? resolvePath(fname) : fname);
 
 			var main = (resolve, reject) =>
-				howToWatch(() => watchObject(dependencies, resolve, reject));
-
-			var howToWatch = (watch) =>
-				watchImmedialy ? watch() : storagePromise.then(watch);
+				storagePromise.onfulfill(() => watchObject(dependencies, resolve, reject));
 
 			var watchObject = (dependencies, resolve, reject) => {
 				createSubPromise(dependencies).then((changes) => {
