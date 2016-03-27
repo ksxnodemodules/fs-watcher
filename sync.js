@@ -39,6 +39,8 @@
 		var storagePath = resolvePath(config.storage);
 		var storageObject = parseJSON(String(readFileSync(storagePath)));
 
+        var acts = [];
+
         var watch = () => {};
 
         var end = () => writeFileSync(storagePath, stringJSON(storageObject)) + '\n';
