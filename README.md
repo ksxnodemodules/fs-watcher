@@ -16,7 +16,7 @@ var watcher = new Watcher({
 });
 watcher.watch(['./target/a.txt', './target/b.txt'], (changes) => {
 	changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
-}).onfinish(() => console.log('Finish'));
+}).onfinish((changes) => console.log('Finish', changes));
 ```
 
 ### Synchronous
@@ -26,10 +26,8 @@ var WatcherSync = require('fs-watcher/sync');
 var watcher = new WatcherSync({
 	storage: './temp/storage.json'
 });
-var callback = (changes) =>
-	changes.forEach((item) => `${item.type} file "${item.name}"`);
-for (let message of watcher.watch(['./target/a.txt', './target/b.txt'], callback)) {
-	console.log(message);
-}
-console.log('finish');
+var changes = watcher.watch(['./target/a.txt', './target/b.txt'], (changes) => {
+    changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
+});
+console.log('Finish', changes);
 ```
