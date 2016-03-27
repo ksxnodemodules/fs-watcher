@@ -70,6 +70,10 @@
 
 		var watch = (dependencies, onchange) => {
 
+			if (done) {
+				throw new Error('Watcher is no longer usable');
+			}
+
 			_requiretype(onchange, 'function');
 			dependencies = dependencies.map((fname) => typeof fname === 'string' ? resolvePath(fname) : fname);
 
@@ -157,6 +161,7 @@
 		return {
 			'watch': _returnf(watch),
 			'space': _returnf(space),
+			'done': () => done,
 			'__proto__': this
 		};
 
