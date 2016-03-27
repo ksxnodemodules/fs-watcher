@@ -7,6 +7,7 @@
 	var DeepIterable = require('x-iterable/deep-iterable');
     // var ChangeDetail = require('./utils/change-detail.js');
     var createChangeDetail = require('./utils/create-change-detail.js');
+    var resolvePathArray = require('./utils/resolve-path-array.js');
 
 	var create = Object.create;
 	var freeze = Object.freeze;
@@ -42,7 +43,19 @@
 
         var acts = [];
 
-        var watch = () => {};
+        var watch = (dependencies, onchange) => {
+
+            _requiretype(onchange, 'function');
+			dependencies = resolvePathArray(dependencies);
+
+            var changes = [];
+
+            var main = () => {};
+
+            acts.push(main);
+            return changes;
+
+        };
 
         var end = () => {
             acts.forEach((func) => func());
