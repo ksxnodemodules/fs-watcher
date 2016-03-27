@@ -6,6 +6,7 @@
 	var path = require('path');
 	var ExtendedPromise = require('extended-promise');
 	var DeepIterable = require('x-iterable/deep-iterable');
+	var ChangeDetail = require('./utils/change-detail.js');
 
 	var create = Object.create;
 	var freeze = Object.freeze;
@@ -168,13 +169,5 @@
 	}
 
 	module.exports = class extends Watcher {};
-
-	function ChangeDetail(type, name, prevmtime, currmtime) {
-		this.type = type;
-		this.name = name;
-		this.prevmtime = prevmtime;
-		this.currmtime = currmtime;
-		freeze(this);
-	}
 
 })(module);
