@@ -33,11 +33,21 @@
 		json ? parseJSON(json) : create(null);
 
     function WatcherSync(config) {
+
         var onload = _getfunc(config.onload, _throwif);
 		var onstore = _getfunc(config.onstore, _throwif);
 		var storagePath = resolvePath(config.storage);
 		var storageObject = parseJSON(String(readFileSync(storagePath)));
-        // writeFileSync(storagePath, stringJSON(storagePath) + '\n');
+
+        var watch = () => {};
+
+        var end = () => writeFileSync(storagePath, stringJSON(storageObject)) + '\n';
+
+        return {
+            'end': _returnf(end),
+            '__proto__': null
+        };
+
     }
 
     module.exports = class extends WatcherSync {};
