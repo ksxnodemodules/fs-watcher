@@ -44,7 +44,10 @@
 
         var watch = () => {};
 
-        var end = () => writeFileSync(storagePath, stringJSON(storageObject)) + '\n';
+        var end = () => {
+            acts.forEach((func) => func());
+            writeFileSync(storagePath, stringJSON(storageObject)) + '\n';
+        };
 
         return {
             'end': _returnf(end),
