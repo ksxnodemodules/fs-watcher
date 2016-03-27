@@ -29,5 +29,6 @@ var watcher = new WatcherSync({
 var changes = watcher.watch(['./target/a.txt', './target/b.txt'], (changes) => {
     changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
 });
+watcher.end();
 console.log('Finish', changes);
 ```
