@@ -105,7 +105,7 @@
 								.map((promise) => new ExtendedPromise((...decide) => promise.onfinish(...decide)))
 							;
 							let getResolveValue = (changes) =>
-								[...new DeepIterable(changes).filter(Boolean)];
+								[...new DeepIterable(changes, (element) => !(element instanceof ChangeDetail)).filter(Boolean)];
 							let subPromiseCallback = (resolve, reject) =>
 								ExtendedPromise.all(promise).onfinish((changes) => resolve(getResolveValue(changes)), reject);
 							return new ExtendedPromise(subPromiseCallback);
