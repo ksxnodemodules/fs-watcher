@@ -2,6 +2,8 @@
 ((module) => {
     'use strict';
 
+    var freeze = Object.freeze;
+
     function ChangeDetail(type, name, prevmtime, currmtime) {
 		this.type = type;
 		this.name = name;
