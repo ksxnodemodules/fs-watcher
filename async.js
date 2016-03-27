@@ -7,6 +7,7 @@
 	var ExtendedPromise = require('extended-promise');
 	var DeepIterable = require('x-iterable/deep-iterable');
 	var ChangeDetail = require('./utils/change-detail.js');
+	var createChangeDetail = require('./utils/create-change-detail.js');
 
 	var create = Object.create;
 	var freeze = Object.freeze;
@@ -123,23 +124,7 @@
 			var createStatCallback = (fname, resolve) =>
 				(error, info) => resolve(createSubPromiseResolve(fname, error, info));
 
-			var createSubPromiseResolve = (fname, error, info) => {
-				let prevmtime = storageObject[fname];
-				if (prevmtime) {
-					if (error) {
-						delete storageObject[fname];
-						return new ChangeDetail('delete', fname, prevmtime, null);
-					}
-					let currmtime = info.mtime.getTime();
-					if (currmtime > prevmtime) {
-						storageObject[fname] = currmtime;
-						return new ChangeDetail('update', fname, prevmtime, currmtime);
-					}
-				} else if (info) {
-					let currmtime = storageObject[fname] = info.mtime.getTime();
-					return new ChangeDetail('create', fname, null, currmtime);
-				}
-			};
+			var createSubPromiseResolve = (...args) => createChangeDetail(storageObject, ...args);
 
 			var result = new ExtendedPromise(main);
 			allPromise.add(result);
