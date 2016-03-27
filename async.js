@@ -64,7 +64,7 @@
 
 		var allPromise = new Set();
 		var writeStorage = () =>
-			writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace), onstore);
+			writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace) + '\n', onstore);
 
 		storagePromise.onfulfill(() => ExtendedPromise.all(allPromise).onfulfill(writeStorage));
 
