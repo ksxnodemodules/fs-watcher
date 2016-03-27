@@ -7,7 +7,7 @@
     var create = (storage, fname, error, info) => {
         let prevmtime = storage[fname];
         if (prevmtime) {
-            if (error) {
+            if (error || info.isDirectory()) {
                 delete storage[fname];
                 return new ChangeDetail('delete', fname, prevmtime, null);
             }
@@ -16,7 +16,7 @@
                 storage[fname] = currmtime;
                 return new ChangeDetail('update', fname, prevmtime, currmtime);
             }
-        } else if (info) {
+        } else if (info && info.isFile()) {
             let currmtime = storage[fname] = info.mtime.getTime();
             return new ChangeDetail('create', fname, null, currmtime);
         }
