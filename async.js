@@ -8,6 +8,7 @@
 	var DeepIterable = require('x-iterable/deep-iterable');
 	var ChangeDetail = require('./utils/change-detail.js');
 	var createChangeDetail = require('./utils/create-change-detail.js');
+	var resolvePathArray = require('./utils/resolve-path-array.js');
 
 	var create = Object.create;
 	var freeze = Object.freeze;
@@ -77,7 +78,7 @@
 			}
 
 			_requiretype(onchange, 'function');
-			dependencies = dependencies.map((fname) => typeof fname === 'string' ? resolvePath(fname) : fname);
+			dependencies = resolvePathArray(dependencies);
 
 			var main = (resolve, reject) =>
 				storagePromise.onfulfill(() => watchObject(dependencies, resolve, reject));
