@@ -56,6 +56,12 @@
                     switch (typeof dependency) {
                         case 'string':
                             // <--
+                            let changedetail;
+                            try {
+                                changedetail = createChangeDetail(dependency, null, statSync(dependency));
+                            } catch (error) {
+                                changedetail = createChangeDetail(dependency, error, null);
+                            }
                             break;
                         case 'object':
                             if (dependency instanceof Array) {
