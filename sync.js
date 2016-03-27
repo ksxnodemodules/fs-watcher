@@ -39,4 +39,6 @@
         // writeFileSync(storagePath, stringJSON(storagePath) + '\n');
     }
 
+    module.exports = class extends WatcherSync {};
+
 })(module);
