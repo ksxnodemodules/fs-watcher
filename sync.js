@@ -4,6 +4,7 @@
 
     var fs = require('fs');
 	var path = require('path');
+    var createTryCatchTuple = require('just-try').tuple;
 	var DeepIterable = require('x-iterable/deep-iterable');
     // var ChangeDetail = require('./utils/change-detail.js');
     var createChangeDetail = require('./utils/create-change-detail.js');
@@ -56,12 +57,10 @@
                     switch (typeof dependency) {
                         case 'string':
                             // <--
-                            let changedetail;
-                            try {
-                                changedetail = createChangeDetail(dependency, null, statSync(dependency));
-                            } catch (error) {
-                                changedetail = createChangeDetail(dependency, error, null);
-                            }
+                            let trytuple = createTryCatchTuple(() => statSync(dependency));
+                            let changedetail = createChangeDetail(storageObject, dependency, ...trytuple);
+                            changes.push(changedetail);
+                            // <--
                             break;
                         case 'object':
                             if (dependency instanceof Array) {
