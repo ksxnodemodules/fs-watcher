@@ -50,7 +50,9 @@
 
             var changes = [];
 
-            var main = () => {};
+            var main = () => {
+                // <-- Continue from here...
+            };
 
             acts.push(main);
             return changes;
