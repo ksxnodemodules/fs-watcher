@@ -6,6 +6,7 @@
 	var path = require('path');
 	var ExtendedPromise = require('extended-promise');
 	var DeepIterable = require('x-iterable/deep-iterable');
+	var bindFunction = require('simple-function-utils/bind').begin;
 	var ChangeDetail = require('./utils/change-detail.js');
 	var createChangeDetail = require('./utils/create-change-detail.js');
 	var resolvePathArray = require('./utils/resolve-path-array.js');
@@ -31,6 +32,12 @@
 		typeof val === 'function' ? val : def;
 
 	var _returnf = (fn) => (...args) => fn(...args);
+
+	var _getresolve = (resolve, argument) => {
+		var result = bindFunction(resolve, argument);
+		result.pure = result.resolve = resolve;
+		return result;
+	};
 
 	var _getstore = (json) =>
 		json ? parseJSON(json) : create(null);
@@ -85,8 +92,7 @@
 
 			var watchObject = (dependencies, resolve, reject) => {
 				createSubPromise(dependencies).then((changes) => {
-					changes.length && onchange(changes, resolve, reject);
-					resolve(changes);
+					changes.length && onchange(changes, _getresolve(resolve, changes), reject);
 				}, reject);
 			};
 

@@ -37,8 +37,13 @@
 	var message = (changes) =>
 		changes.forEach((item) => console.log(item));
 
-	var promiseA = watcher.watch(filelistA, message).onfinish(callback.onfulfilled, callback.onrejected);
+	var onchange = (changes, resolve) => {
+		message(changes);
+		resolve();
+	};
 
-	watcher.watch([...filelistB, promiseA], message).onfinish(callback.onfulfilled, callback.onrejected);
+	var promiseA = watcher.watch(filelistA, onchange).onfinish(callback.onfulfilled, callback.onrejected);
+
+	watcher.watch([...filelistB, promiseA], onchange).onfinish(callback.onfulfilled, callback.onrejected);
 
 })(module);

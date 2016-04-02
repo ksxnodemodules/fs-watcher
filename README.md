@@ -14,8 +14,9 @@ var Watcher = require('fs-watcher/async');
 var watcher = new Watcher({
 	storage: './temp/storage.json'
 });
-watcher.watch(['./target/a.txt', './target/b.txt'], (changes) => {
+watcher.watch(['./target/a.txt', './target/b.txt'], (changes, resolve) => {
 	changes.forEach((item) => console.log(`${item.type} file "${item.name}"`));
+    resolve(); // or resolve.pure(changes)
 }).onfinish((changes) => console.log('Finish', changes));
 ```
 
