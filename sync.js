@@ -69,7 +69,7 @@
                             throw new TypeError(`${dependency} is not a valid Dependency`);
                     }
                 }
-                onchange(changes);
+                changes.length && onchange(changes);
             };
 
             acts.push(main);
