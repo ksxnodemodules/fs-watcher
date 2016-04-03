@@ -78,12 +78,26 @@
 
         };
 
+        var space = (value) => {
+        	switch (typeof value) {
+        		case 'undefined':
+        		case 'string':
+        			return jsonspace = value;
+        		case 'number':
+        			return jsonspace = parseInt(value);
+        	}
+        	throw new TypeError(`${value} is invalide`);
+        };
+        var jsonspace = space(config.jsonspace);
+
         var end = () => {
             acts.forEach((func) => func());
-            writeFileSync(storagePath, stringJSON(storageObject)) + '\n';
+            writeFileSync(storagePath, stringJSON(storageObject, undefined, jsonspace)) + '\n';
         };
 
         return {
+            'watch': _returnf(watch),
+            'space': _returnf(space),
             'end': _returnf(end),
             '__proto__': null
         };
