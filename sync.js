@@ -61,7 +61,7 @@
                             break;
                         case 'object':
                             if (dependency instanceof Array) {
-                                watch(dependency, (subchanges) => changes.push(...subchanges));
+                                watch(dependency.map((detail) => detail.name), (subchanges) => changes.push(...subchanges));
                                 break;
                             }
                             // do not break here
