@@ -20,7 +20,7 @@
 	var parseJSON = JSON.parse;
 	var stringJSON = JSON.stringify;
     class ActionListSuper extends FSWArray.ActionList {}
-    class ChangeDetailListSuper extends FSWArray.ChangeDetailListSuper {}
+    class ChangeDetailListSuper extends FSWArray.ChangeDetailList {}
 
     var _throw = (error) => {throw error};
 
