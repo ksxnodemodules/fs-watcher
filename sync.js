@@ -6,7 +6,6 @@
 	var path = require('path');
     var createTryCatchTuple = require('just-try').tuple;
 	var DeepIterable = require('x-iterable/deep-iterable');
-    // var ChangeDetail = require('./utils/change-detail.js');
     var createChangeDetail = require('./utils/create-change-detail.js');
     var resolvePathArray = require('./utils/resolve-path-array.js');
 
