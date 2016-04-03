@@ -10,6 +10,7 @@
 	var ChangeDetail = require('./utils/change-detail.js');
 	var createChangeDetail = require('./utils/create-change-detail.js');
 	var resolvePathArray = require('./utils/resolve-path-array.js');
+	var jsonSeperator = require('./utils/json-separator.js');
 
 	var create = Object.create;
 	var freeze = Object.freeze;
@@ -139,16 +140,7 @@
 
 		};
 
-		var space = (value) => {
-			switch (typeof value) {
-				case 'undefined':
-				case 'string':
-					return jsonspace = value;
-				case 'number':
-					return jsonspace = parseInt(value);
-			}
-			throw new TypeError(`${value} is invalide`);
-		};
+		var space = (value) => jsonspace = jsonSeperator(value);
 		var jsonspace = space(config.jsonspace);
 
 		return {
