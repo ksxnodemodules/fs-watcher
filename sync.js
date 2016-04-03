@@ -8,6 +8,7 @@
 	var DeepIterable = require('x-iterable/deep-iterable');
     var createChangeDetail = require('./utils/create-change-detail.js');
     var resolvePathArray = require('./utils/resolve-path-array.js');
+    var FSWArray = require('./utils/fsw-array.js');
 
 	var create = Object.create;
 	var freeze = Object.freeze;
@@ -18,6 +19,8 @@
 	var resolvePath = path.resolve;
 	var parseJSON = JSON.parse;
 	var stringJSON = JSON.stringify;
+    class ActionListSuper extends FSWArray.ActionList {}
+    class ChangeDetailListSuper extends FSWArray.ChangeDetailListSuper {}
 
     var _throw = (error) => {throw error};
 
@@ -40,15 +43,17 @@
 		var onstore = _getfunc(config.onstore, _throwif);
 		var storagePath = resolvePath(config.storage);
 		var storageObject = parseJSON(String(readFileSync(storagePath)));
+        class ActionList extends ActionListSuper {}
+        class ChangeDetailList extends ChangeDetailListSuper {}
 
-        var acts = [];
+        var acts = new ActionList();
 
         var watch = (dependencies, onchange) => {
 
             _requiretype(onchange, 'function');
 			dependencies = resolvePathArray(dependencies);
 
-            var changes = [];
+            var changes = new ChangeDetailList();
 
             var main = () => {
                 for (let dependency of dependencies) {
@@ -60,8 +65,8 @@
                             changes.push(changedetail);
                             break;
                         case 'object':
-                            if (dependency instanceof Array) {
-                                watch(dependency.map((detail) => detail.name), (subchanges) => changes.push(...subchanges));
+                            if (dependency instanceof ChangeDetailList) {
+                                changes.push(...dependency);
                                 break;
                             }
                             // do not break here
@@ -76,6 +81,9 @@
             return changes;
 
         };
+
+        watch.ActionList = ActionList;
+        watch.ChangeDetailList = ChangeDetailList;
 
         var space = (value) => {
         	switch (typeof value) {
