@@ -99,7 +99,6 @@
 
         var end = () => {
             acts.forEach((func) => func());
-            atcs.length = 0;
             writeFileSync(storagePath, stringJSON(storageObject, undefined, jsonspace)) + '\n';
         };
 
