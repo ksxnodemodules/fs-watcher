@@ -85,7 +85,7 @@
         		case 'number':
         			return jsonspace = parseInt(value);
         	}
-        	throw new TypeError(`${value} is invalide`);
+        	throw new TypeError(`${value} is invalid`);
         };
         var jsonspace = space(config.jsonspace);
 
