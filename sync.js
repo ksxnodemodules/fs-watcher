@@ -52,26 +52,25 @@
             var changes = [];
 
             var main = () => {
-                // <-- Continue from here...
                 for (let dependency of dependencies) {
                     switch (typeof dependency) {
                         case 'string':
-                            // <--
+                        case 'number':
                             let trytuple = createTryCatchTuple(() => statSync(dependency));
                             let changedetail = createChangeDetail(storageObject, dependency, ...trytuple);
                             changes.push(changedetail);
-                            // <--
                             break;
                         case 'object':
                             if (dependency instanceof Array) {
-                                // <--
+                                watch(dependency, (subchanges) => changes.push(...subchanges));
+                                break;
                             }
                             // do not break here
                         default:
                             throw new TypeError(`${dependency} is not a valid Dependency`);
                     }
-                    // <--
                 }
+                onchange(changes);
             };
 
             acts.push(main);
