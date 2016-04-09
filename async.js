@@ -4,10 +4,10 @@
 
 	var fs = require('fs');
 	var path = require('path');
-	var ExtendedPromise = require('extended-promise');
 	var DeepIterable = require('x-iterable/deep-iterable');
 	var bindFunction = require('simple-function-utils/bind').begin;
 	var ChangeDetail = require('./utils/change-detail.js');
+	var FSWPromise = require('./utils/promise');
 	var createChangeDetail = require('./utils/create-change-detail.js');
 	var resolvePathArray = require('./utils/resolve-path-array.js');
 	var jsonSeperator = require('./utils/json-separator.js');
@@ -49,8 +49,10 @@
 		var onstore = _getfunc(config.onstore, _throwif);
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
+		class LocalPromise extends FSWPromise {};
+		class PrivatePromise extends LocalPromise {};
 
-		var storagePromise = new ExtendedPromise((resolve, reject) => {
+		var storagePromise = new PrivatePromise((resolve, reject) => {
 			readFile(storagePath, (error, data) => {
 				var callbackArguments = [null, this];
 				if (error) {
@@ -78,7 +80,7 @@
 		var writeStorage = () =>
 			writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace) + '\n', onstore);
 
-		storagePromise.onfulfill(() => ExtendedPromise.all(allPromise).onfulfill(writeStorage));
+		storagePromise.onfulfill(() => PrivatePromise.all(allPromise).onfulfill(writeStorage));
 
 		var watch = (dependencies, onchange) => {
 
@@ -100,11 +102,11 @@
 
 			var createSubPromise = (dependency) => {
 				let res = createdPromise.get(dependency);
-				if (res instanceof ExtendedPromise) {
+				if (res instanceof PrivatePromise) {
 					return res;
 				}
 				let mkResult = (callback) => {
-					var result = new ExtendedPromise(callback);
+					var result = new PrivatePromise(callback);
 					createdPromise.set(dependency, result);
 					return result;
 				};
@@ -114,26 +116,26 @@
 							stat(dependency, createStatCallback(dependency, resolve, reject));
 						return mkResult(subPromiseCallback);
 					case 'function':
-						return new ExtendedPromise(dependency);
+						return new PrivatePromise(dependency);
 					case 'object':
 						if (!dependency) {
 							break;
 						}
-						if (dependency instanceof Promise) {
+						if (dependency instanceof PrivatePromise) {
 							let subPromiseCallback = (resolve, reject) =>
-								new ExtendedPromise(dependency).onfulfill(resolve, reject);
-							return new ExtendedPromise(subPromiseCallback);
+								new PrivatePromise(dependency).onfulfill(resolve, reject);
+							return new PrivatePromise(subPromiseCallback);
 						}
 						if (typeof dependency[Symbol.iterator] === 'function') {
 							let promise = [...dependency]
 								.map(createSubPromise)
-								.map((promise) => new ExtendedPromise((...decide) => promise.onfinish(...decide)))
+								.map((promise) => new PrivatePromise((...decide) => promise.onfinish(...decide)))
 							;
 							let getResolveValue = (changes) =>
 								[...new DeepIterable(changes, (element) => !(element instanceof ChangeDetail)).filter(Boolean)];
 							let subPromiseCallback = (resolve, reject) =>
-								ExtendedPromise.all(promise).onfinish((changes) => resolve(getResolveValue(changes)), reject);
-							return new ExtendedPromise(subPromiseCallback);
+								PrivatePromise.all(promise).onfinish((changes) => resolve(getResolveValue(changes)), reject);
+							return new PrivatePromise(subPromiseCallback);
 						}
 				}
 				throw new TypeError(`${dependency} is not a valid Dependency`);
@@ -144,7 +146,7 @@
 
 			var createSubPromiseResolve = (...args) => createChangeDetail(storageObject, ...args);
 
-			var result = new ExtendedPromise(main);
+			var result = new PrivatePromise(main);
 			allPromise.add(result);
 			return result;
 
@@ -157,6 +159,7 @@
 			'watch': _returnf(watch),
 			'space': _returnf(space),
 			'done': () => done,
+			'LocalPromise': LocalPromise,
 			'__proto__': this
 		};
 
