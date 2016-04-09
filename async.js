@@ -112,7 +112,6 @@
 					case 'string':
 						let subPromiseCallback = (resolve, reject) =>
 							stat(dependency, createStatCallback(dependency, resolve, reject));
-						res = new ExtendedPromise(subPromiseCallback);
 						return mkResult(subPromiseCallback);
 					case 'function':
 						return new ExtendedPromise(dependency);
