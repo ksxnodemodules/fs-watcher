@@ -7,7 +7,7 @@
 	var DeepIterable = require('x-iterable/deep-iterable');
 	var bindFunction = require('simple-function-utils/bind').begin;
 	var ChangeDetail = require('./utils/change-detail.js');
-	var FSWPromise = require('./utils/promise');
+	var FSWPromise = require('./utils/fsw-promise.js');
 	var createChangeDetail = require('./utils/create-change-detail.js');
 	var resolvePathArray = require('./utils/resolve-path-array.js');
 	var jsonSeperator = require('./utils/json-separator.js');
