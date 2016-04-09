@@ -73,6 +73,7 @@
 
 		var done = false;
 
+		var createdPromise = new Map();
 		var allPromise = new Set();
 		var writeStorage = () =>
 			writeFile(storagePath, stringJSON(storageObject, undefined, jsonspace) + '\n', onstore);
@@ -98,11 +99,21 @@
 			};
 
 			var createSubPromise = (dependency) => {
+				let res = createdPromise.get(dependency);
+				if (res instanceof ExtendedPromise) {
+					return res;
+				}
+				let mkResult = (callback) => {
+					var result = new ExtendedPromise(callback);
+					createdPromise.set(dependency, result);
+					return result;
+				};
 				switch (typeof dependency) {
 					case 'string':
 						let subPromiseCallback = (resolve, reject) =>
 							stat(dependency, createStatCallback(dependency, resolve, reject));
-					 	return new ExtendedPromise(subPromiseCallback);
+						res = new ExtendedPromise(subPromiseCallback);
+						return mkResult(subPromiseCallback);
 					case 'function':
 						return new ExtendedPromise(dependency);
 					case 'object':
