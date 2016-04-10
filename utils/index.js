@@ -1,5 +1,6 @@
 
 module.exports = {
+    'mkhandle': require('./mkhandle.js'),
     'ChangeDetail': require('./change-detail.js'),
     'createChangeDetail': require('./create-change-detail.js'),
     'resolvePathArray': require('./resolve-path-array.js'),
