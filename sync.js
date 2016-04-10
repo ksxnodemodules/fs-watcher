@@ -6,6 +6,7 @@
 	var path = require('path');
     var createTryCatchTuple = require('just-try').tuple;
 	var DeepIterable = require('x-iterable/deep-iterable');
+    var retf = require('./utils/retf.js');
     var createChangeDetail = require('./utils/create-change-detail.js');
     var resolvePathArray = require('./utils/resolve-path-array.js');
     var jsonSeperator = require('./utils/json-separator.js');
@@ -33,12 +34,6 @@
 
 	var _getfunc = (val, def) =>
 		typeof val === 'function' ? val : def;
-
-	var _returnf = (fn) => {
-        let call = (...args) => fn(...args);
-        setproto(call, fn);
-        return call;
-    };
 
 	var _getstore = (json) =>
 		json ? parseJSON(json) : create(null);
@@ -100,9 +95,9 @@
         };
 
         return {
-            'watch': _returnf(watch),
-            'space': _returnf(space),
-            'end': _returnf(end),
+            'watch': retf(watch),
+            'space': retf(space),
+            'end': retf(end),
             '__proto__': null
         };
 

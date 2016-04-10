@@ -6,6 +6,8 @@
 	var path = require('path');
 	var DeepIterable = require('x-iterable/deep-iterable');
 	var bindFunction = require('simple-function-utils/bind').begin;
+	var retf = require('./utils/retf.js');
+	var getmkhandle = require('./utils/mkhandle.js');
 	var ChangeDetail = require('./utils/change-detail.js');
 	var FSWPromise = require('./utils/fsw-promise.js');
 	var createChangeDetail = require('./utils/create-change-detail.js');
@@ -32,8 +34,6 @@
 	var _getfunc = (val, def) =>
 		typeof val === 'function' ? val : def;
 
-	var _returnf = (fn) => (...args) => fn(...args);
-
 	var _getresolve = (resolve, argument) => {
 		var result = bindFunction(resolve, argument);
 		result.pure = result.resolve = resolve;
@@ -43,11 +43,13 @@
 	var _getstore = (json) =>
 		json ? parseJSON(json) : create(null);
 
+	const HANDLEANYWAY = getmkhandle.HANDLEANYWAY;
+
 	function Watcher(config) {
 
 		var onload = _getfunc(config.onload, _throwif);
 		var onstore = _getfunc(config.onstore, _throwif);
-		var mkhandle = _getfunc(config.mkhandle, _returnf);
+		var mkhandle = _getfunc(config.mkhandle, HANDLEANYWAY);
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
 		class LocalPromise extends FSWPromise {}
@@ -151,14 +153,15 @@
 
 		};
 
+		watch.LocalPromise = LocalPromise;
+
 		var space = (value) => jsonspace = jsonSeperator(value);
 		var jsonspace = space(config.jsonspace);
 
 		return {
-			'watch': _returnf(watch),
-			'space': _returnf(space),
+			'watch': retf(watch),
+			'space': retf(space),
 			'done': () => done,
-			'LocalPromise': LocalPromise,
 			'__proto__': this
 		};
 
@@ -166,6 +169,6 @@
 
 	module.exports = class extends Watcher {};
 
-	require('./utils/mkhandle').apply(Watcher);
+	getmkhandle.apply(Watcher);
 
 })(module);

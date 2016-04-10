@@ -1,5 +1,6 @@
 
 module.exports = {
+    'retf': require('./retf.js'),
     'mkhandle': require('./mkhandle.js'),
     'ChangeDetail': require('./change-detail.js'),
     'createChangeDetail': require('./create-change-detail.js'),
