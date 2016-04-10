@@ -13,6 +13,7 @@
 
 	var create = Object.create;
 	var freeze = Object.freeze;
+    var setproto = Object.setPrototypeOf;
 	var parseJSON = JSON.parse;
 	var readFileSync = fs.readFileSync;
 	var writeFileSync = fs.writeFileSync;
@@ -33,7 +34,11 @@
 	var _getfunc = (val, def) =>
 		typeof val === 'function' ? val : def;
 
-	var _returnf = (fn) => (...args) => fn(...args);
+	var _returnf = (fn) => {
+        let call = (...args) => fn(...args);
+        setproto(call, fn);
+        return call;
+    };
 
 	var _getstore = (json) =>
 		json ? parseJSON(json) : create(null);
