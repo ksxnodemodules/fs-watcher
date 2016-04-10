@@ -49,8 +49,8 @@
 		var onstore = _getfunc(config.onstore, _throwif);
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
-		class LocalPromise extends FSWPromise {};
-		class PrivatePromise extends LocalPromise {};
+		class LocalPromise extends FSWPromise {}
+		class PrivatePromise extends LocalPromise {}
 
 		var storagePromise = new PrivatePromise((resolve, reject) => {
 			readFile(storagePath, (error, data) => {
