@@ -2,6 +2,8 @@
 ((module) => {
     'use strict';
 
+    var setproto = Object.setPrototypeOf;
+
     var _returnf = (fn) => {
         let call = (...args) => fn(...args);
         setproto(call, fn);
