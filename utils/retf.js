@@ -5,7 +5,7 @@
     var setproto = Object.setPrototypeOf;
 
     var _returnf = (fn) => {
-        let call = (...args) => fn(...args);
+        var call = (...args) => fn(...args);
         setproto(call, fn);
         return call;
     };
