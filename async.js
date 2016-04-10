@@ -47,6 +47,7 @@
 
 		var onload = _getfunc(config.onload, _throwif);
 		var onstore = _getfunc(config.onstore, _throwif);
+		var mkhandle = _getfunc(config.mkhandle, _returnf);
 		var storagePath = resolvePath(config.storage);
 		var storageObject = null;
 		class LocalPromise extends FSWPromise {}
@@ -82,23 +83,21 @@
 
 		storagePromise.onfulfill(() => PrivatePromise.all(allPromise).onfulfill(writeStorage));
 
-		var watch = (dependencies, onchange) => {
+		var watch = (dependencies, handle) => {
 
 			if (done) {
 				throw new Error('This Watcher is no longer usable');
 			}
 
-			_requiretype(onchange, 'function');
+			_requiretype(handle, 'function');
+			handle = mkhandle(handle);
 			dependencies = resolvePathArray(dependencies);
 
 			var main = (resolve, reject) =>
 				storagePromise.onfulfill(() => watchObject(dependencies, resolve, reject));
 
-			var watchObject = (dependencies, resolve, reject) => {
-				createSubPromise(dependencies).then((changes) => {
-					changes.length && onchange(changes, _getresolve(resolve, changes), reject);
-				}, reject);
-			};
+			var watchObject = (dependencies, resolve, reject) =>
+				createSubPromise(dependencies).then((changes) => handle(changes, _getresolve(resolve, changes)), reject);
 
 			var createSubPromise = (dependency) => {
 				let res = createdPromise.get(dependency);
@@ -166,5 +165,7 @@
 	}
 
 	module.exports = class extends Watcher {};
+
+	require('./utils/mkhandle').apply(Watcher);
 
 })(module);
