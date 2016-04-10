@@ -9,6 +9,7 @@
 	const TEMP = joinPath(__dirname, 'temp');
 	const TARGETA = joinPath(TEMP, 'target-a');
 	const TARGETB = joinPath(TEMP, 'target-b');
+	const CALLBACK = Object.freeze([callback.onfulfilled, callback.onrejected]);
 
 	[TEMP, TARGETA, TARGETB].forEach((dir) => mkdirSync(dir));
 	process.chdir(TEMP);
@@ -42,8 +43,8 @@
 		resolve();
 	};
 
-	var promiseA = watcher.watch(filelistA, onchange).onfinish(callback.onfulfilled, callback.onrejected);
+	var promiseA = watcher.watch(filelistA, onchange).onfinish(...CALLBACK);
 
-	watcher.watch([...filelistB, promiseA], onchange).onfinish(callback.onfulfilled, callback.onrejected);
+	watcher.watch([...filelistB, promiseA], onchange).onfinish(...CALLBACK);
 
 })(module);
