@@ -4,7 +4,7 @@
 
     var fs = require('fs');
 	var path = require('path');
-    var createTryCatchTuple = require('just-try').tuple;
+    var jtry = require('just-try');
 	var DeepIterable = require('x-iterable/deep-iterable');
     var retf = require('./utils/retf.js');
     var getmkhandle = require('./utils/mkhandle-sync.js');
@@ -20,6 +20,7 @@
 	var writeFileSync = fs.writeFileSync;
 	var statSync = fs.statSync;
 	var resolvePath = path.resolve;
+    var createTryCatchTuple = jtry.tuple;
 	var parseJSON = JSON.parse;
 	var stringJSON = JSON.stringify;
     class ActionListSuper extends FSWArray.ActionList {}
@@ -46,7 +47,7 @@
 		var onstore = _getfunc(config.onstore, _throwif);
         var mkhandle = _getfunc(config.mkhandle, HANDLEANYWAY);
 		var storagePath = resolvePath(config.storage);
-		var storageObject = parseJSON(String(readFileSync(storagePath)));
+        var storageObject = jtry(() => String(readFileSync(storagePath)), () => create(null), parseJSON);
         class ActionList extends ActionListSuper {}
         class ChangeDetailList extends ChangeDetailListSuper {}
 
@@ -94,7 +95,7 @@
 
         var end = () => {
             acts.forEach((func) => func());
-            writeFileSync(storagePath, stringJSON(storageObject, undefined, jsonspace)) + '\n';
+            writeFileSync(storagePath, stringJSON(storageObject, undefined, jsonspace) + '\n');
         };
 
         return {
