@@ -4,8 +4,9 @@
 
 	var info = require('../package.json');
 
+	require('./title.js')();
 	console.log(
-		`TESTING:\n\t\x1B[33mType:\x1B[0m NodeJS package\n\t\x1B[33mName:\x1B[0m ${info.name}\n\t\x1B[33mGit URL:\x1B[0m ${info.repository.url}`
+		`\t\x1B[33mType:\x1B[0m NodeJS package\n\t\x1B[33mName:\x1B[0m ${info.name}\n\t\x1B[33mGit URL:\x1B[0m ${info.repository.url}`
 	);
 
 	['sync', 'async']
