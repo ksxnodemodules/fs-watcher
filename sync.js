@@ -74,7 +74,6 @@
                                 changes.push(...dependency);
                                 break;
                             }
-                            // do not break here
                         default:
                             throw new TypeError(`${dependency} is not a valid Dependency`);
                     }
