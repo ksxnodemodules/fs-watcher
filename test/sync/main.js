@@ -26,7 +26,7 @@
 		return;
 	}
 
-	console.log('Testing Sync');
+	require('../title.js')('SYNC');
 
 	var Watcher = require('fs-watcher/sync');
 	var watcher = new Watcher({

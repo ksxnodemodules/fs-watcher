@@ -27,7 +27,7 @@
 		return;
 	}
 
-	console.log('Testing Async');
+	require('../title.js')('ASYNC');
 
 	var Watcher = require('fs-watcher/async');
 	var watcher = new Watcher({
