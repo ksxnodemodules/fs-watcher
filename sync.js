@@ -7,6 +7,7 @@
     var createTryCatchTuple = require('just-try').tuple;
 	var DeepIterable = require('x-iterable/deep-iterable');
     var retf = require('./utils/retf.js');
+    var getmkhandle = require('./utils/mkhandle-sync.js');
     var createChangeDetail = require('./utils/create-change-detail.js');
     var resolvePathArray = require('./utils/resolve-path-array.js');
     var jsonSeperator = require('./utils/json-separator.js');
@@ -37,10 +38,13 @@
 	var _getstore = (json) =>
 		json ? parseJSON(json) : create(null);
 
+    const HANDLEANYWAY = getmkhandle.HANDLEANYWAY;
+
     function WatcherSync(config) {
 
         var onload = _getfunc(config.onload, _throwif);
 		var onstore = _getfunc(config.onstore, _throwif);
+        var mkhandle = _getfunc(config.mkhandle, HANDLEANYWAY);
 		var storagePath = resolvePath(config.storage);
 		var storageObject = parseJSON(String(readFileSync(storagePath)));
         class ActionList extends ActionListSuper {}
@@ -48,9 +52,10 @@
 
         var acts = new ActionList();
 
-        var watch = (dependencies, onchange) => {
+        var watch = (dependencies, handle) => {
 
-            _requiretype(onchange, 'function');
+            _requiretype(handle, 'function');
+            handle = mkhandle(handle);
 			dependencies = resolvePathArray(dependencies);
 
             var changes = new ChangeDetailList();
@@ -74,7 +79,7 @@
                             throw new TypeError(`${dependency} is not a valid Dependency`);
                     }
                 }
-                changes.length && onchange(changes);
+                handle(changes);
             };
 
             acts.push(main);
