@@ -68,7 +68,7 @@
                         case 'number':
                             let trytuple = createTryCatchTuple(() => statSync(dependency));
                             let changedetail = createChangeDetail(storageObject, dependency, ...trytuple);
-                            changes.push(changedetail);
+                            changedetail && changes.push(changedetail);
                             break;
                         case 'object':
                             if (dependency instanceof ChangeDetailList) {
