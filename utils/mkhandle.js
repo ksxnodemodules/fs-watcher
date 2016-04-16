@@ -7,7 +7,7 @@
     var def = Object.defineProperty;
 
     const HANDLE = freeze({
-        'HANDLEANYWAY': (handle) => (...args) => handle(...args),
+        'HANDLEANYWAY': (handle) => handle,
         'HANDLEIFCHANGE': (handle) => (changes, resolve) => changes.length ? handle(changes, resolve) : resolve(),
         'HANDLEIFNOCHANGE': (handle) => (changes, resolve) => changes.length ? resolve() : handle(changes, resolve),
         '__proto__': null
