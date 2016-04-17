@@ -3,7 +3,7 @@
 
 ## Working in progress
 
-### Spit fs-watcher to fs-watcher-sync and fs-watcher-async
+### Split fs-watcher to fs-watcher-sync and fs-watcher-async
 
 fs-watcher would be a dependent of fs-watcher-sync and fs-watcher-async
 
