@@ -1,0 +1,6 @@
+
+{
+	"scripts": {
+		"test": "node --es-staging ./main.js"
+	}
+}

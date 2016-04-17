@@ -1,0 +1,8 @@
+*.log
+quick-test
+test
+temp
+node_modules
+.gitignore
+*.sh
+ROADMAP.md
