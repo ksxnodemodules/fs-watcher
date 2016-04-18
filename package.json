@@ -30,6 +30,6 @@
 	},
 	"homepage": "https://github.com/ksxnodemodules/fs-watcher#readme",
 	"scripts": {
-		"test": "node --es-staging ./test/main.js"
+		"test": "./test.sh"
 	}
 }
