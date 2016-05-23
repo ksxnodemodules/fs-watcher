@@ -33,20 +33,20 @@
 	var _requiretype = (value, type) =>
 		typeof value === type ? value : _throw(new TypeError(`${value} is not a ${type}`));
 
-	var _getfunc = (val, def) =>
-		typeof val === 'function' ? val : def;
-
 	var _getstore = (json) =>
 		json ? parseJSON(json) : create(null);
 
     const HANDLEANYWAY = getmkhandle.HANDLEANYWAY;
 
-    function WatcherSync(config) {
+    function WatcherSync({
+        onload = _throwif,
+        onstore = _throwif,
+        mkhandle = HANDLEANYWAY,
+        storage,
+        jsonspace
+    }) {
 
-        var onload = _getfunc(config.onload, _throwif);
-		var onstore = _getfunc(config.onstore, _throwif);
-        var mkhandle = _getfunc(config.mkhandle, HANDLEANYWAY);
-		var storagePath = resolvePath(config.storage);
+		var storagePath = resolvePath(storage);
         var storageObject = jtry(() => String(readFileSync(storagePath)), () => create(null), parseJSON);
         class ActionList extends ActionListSuper {}
         class ChangeDetailList extends ChangeDetailListSuper {}
@@ -91,7 +91,7 @@
         watch.ChangeDetailList = ChangeDetailList;
 
         var space = (value) => jsonspace = jsonSeperator(value);
-        var jsonspace = space(config.jsonspace);
+        jsonspace = space(config.jsonspace);
 
         var end = () => {
             acts.forEach((func) => func());
