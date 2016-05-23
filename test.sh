@@ -1,2 +1,2 @@
 #! /usr/bin/env bash
-node --es-staging ./test/main.js
+node ./test/main.js
