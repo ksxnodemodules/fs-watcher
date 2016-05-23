@@ -3,7 +3,7 @@
 	'use strict';
 
 	var path = require('path');
-	var readdirSync = require('fs').readdirSync;
+	var {readdirSync} = require('fs');
 
 	var resolvePath = path.resolve;
 	var joinPath = path.join;
