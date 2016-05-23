@@ -22,7 +22,7 @@
 		"simple-function-utils": ">=2.3.0 <3.0.0"
 	},
 	"devDependencies": {
-		"fs-force": ">= 0.0.0"
+		"fs-force": "^3.0.0"
 	},
 	"main": "index.js",
 	"bugs": {
