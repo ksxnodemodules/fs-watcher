@@ -13,7 +13,7 @@
 		"url": "https://github.com/ksxnodemodules/fs-watcher.git"
 	},
 	"engines": {
-		"node": ">= 5.0.0"
+		"node": ">= 6.0.0"
 	},
 	"dependencies": {
 		"extended-promise": ">=0.0.2 <=2.0.0",
