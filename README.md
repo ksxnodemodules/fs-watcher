@@ -1,6 +1,9 @@
 
 # fs-watcher
 
+[![dependencies status](https://david-dm.org/ksxnodemodules/fs-watcher.svg)](https://david-dm.org/ksxnodemodules/fs-watcher#info=dependencies)
+[![devDependencies status](https://david-dm.org/ksxnodemodules/fs-watcher/dev-status.svg)](https://david-dm.org/ksxnodemodules/fs-watcher#info=devDependencies)
+
 ## Requirements
 
  * Node >= 6.0.0
