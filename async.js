@@ -16,7 +16,6 @@
 
 	var create = Object.create;
 	var freeze = Object.freeze;
-	var parseJSON = JSON.parse;
 	var readFile = fs.readFile;
 	var writeFile = fs.writeFile;
 	var stat = fs.stat;
@@ -68,7 +67,7 @@
 					} catch (error) {
 						callbackArguments = [error, null];
 						reject(error); // Now is the time to reject()
-					};
+					}
 					resolve();
 				}
 				done = true;
@@ -140,7 +139,7 @@
 						}
 				}
 				throw new TypeError(`${dependency} is not a valid Dependency`);
-			}
+			};
 
 			var createStatCallback = (fname, resolve) =>
 				(error, info) => resolve(createSubPromiseResolve(fname, error, info));

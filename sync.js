@@ -15,7 +15,6 @@
 
 	var create = Object.create;
 	var freeze = Object.freeze;
-	var parseJSON = JSON.parse;
 	var readFileSync = fs.readFileSync;
 	var writeFileSync = fs.writeFileSync;
 	var statSync = fs.statSync;
